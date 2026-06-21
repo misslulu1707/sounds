@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — find out your tomorrow</title>
+<style>
+  :root {
+    /* lifted from the logo */
+    --plum: #4a1f3d;
+    --plum-deep: #3a1730;
+    --plum-rich: #5c2a4a;
+    --plum-card: #56234627;
+    --gold: #c79a5b;
+    --gold-bright: #e0bd84;
+    --gold-faint: #a8854e;
+    --cream: #f3ece2;
+    --cream-mute: #cdbcae;
+    --faint: #9a7e92;
+    --line: #6a3a5a;
+    --line-soft: #5c2a4a;
+    --open: #cdb07a;
+    --wait: #c79a5b;
+    --hold: #9a6f8f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Cormorant Garamond', 'EB Garamond', Garamond, 'Times New Roman', serif;
+    background: #2a1022;
+    color: var(--cream);
+    -webkit-font-smoothing: antialiased;
+  }
+  .sans { font-family: -apple-system, 'Segoe UI', Helvetica, sans-serif; }
+
+  .phone {
+    max-width: 412px; margin: 24px auto; min-height: 860px; position: relative;
+    background: linear-gradient(180deg, var(--plum) 0%, var(--plum-deep) 100%);
+    border: 1px solid var(--line-soft); border-radius: 34px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55);
+  }
+  /* faint gold constellation texture */
+  .stars { position:absolute; inset:0; pointer-events:none; opacity:.5; }
+  .star { position:absolute; background: var(--gold-bright); border-radius:50%; animation: tw 5s infinite ease-in-out; }
+  @keyframes tw { 0%,100%{opacity:.15} 50%{opacity:.7} }
+
+  .statusbar { display:flex; justify-content:space-between; padding:14px 24px 0; font-family:-apple-system,sans-serif; font-size:13px; color: var(--cream-mute); position:relative; z-index:2; }
+
+  .app { position:relative; z-index:2; padding: 6px 24px 30px; }
+
+  /* header / wordmark in the logo's style */
+  .top { display:flex; align-items:center; justify-content:space-between; padding: 16px 0 8px; }
+  .wordmark { display:flex; flex-direction:column; align-items:center; flex:1; }
+  .wordmark .mark {
+    font-size: 30px; letter-spacing: 0.18em; color: var(--gold);
+    font-weight: 600; text-indent: 0.18em;
+  }
+  .wordmark .tag {
+    font-family:-apple-system,sans-serif; font-size: 9px; letter-spacing: 0.34em;
+    text-transform: uppercase; color: var(--gold-faint); margin-top: 3px;
+  }
+  .menu { width:26px; height:18px; display:flex; flex-direction:column; justify-content:space-between; cursor:pointer; position:absolute; right:24px; }
+  .menu i { height:2px; background: var(--gold); border-radius:2px; }
+  .hairline { height:1px; background: linear-gradient(90deg, transparent, var(--line), transparent); margin: 8px 0 4px; }
+
+  .screen { display:none; }
+  .screen.active { display:block; animation: rise .5s ease; }
+  @keyframes rise { from{opacity:0; transform: translateY(10px);} to{opacity:1;transform:none;} }
+
+  /* HOME */
+  .greet { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color: var(--faint); margin-top: 24px; }
+  .sky-now { font-size: 27px; line-height:1.32; margin-top:12px; font-weight: 500; }
+  .sky-now em { color: var(--gold-bright); font-style: italic; }
+
+  .verdict {
+    margin-top: 24px; border-radius: 18px; padding: 24px;
+    background: linear-gradient(155deg, rgba(255,255,255,0.05), rgba(0,0,0,0.12));
+    border: 1px solid var(--line); position: relative; overflow:hidden;
+  }
+  .verdict::before {
+    content:''; position:absolute; top:-50px; right:-50px; width:150px; height:150px; border-radius:50%;
+    background: radial-gradient(circle, rgba(199,154,91,0.22), transparent 70%);
+  }
+  .vlabel { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color: var(--faint); }
+  .vstate { display:flex; align-items:center; gap:12px; margin: 14px 0 8px; }
+  .dot { width:12px; height:12px; border-radius:50%; box-shadow:0 0 12px currentColor; }
+  .vstate b { font-size: 30px; font-weight:600; letter-spacing:-0.01em; color: var(--cream); }
+  .vsub { font-family:-apple-system,sans-serif; font-size:14px; color: var(--cream-mute); line-height:1.6; }
+
+  .weather { display:flex; gap:10px; margin-top:20px; }
+  .wcard { flex:1; background: rgba(0,0,0,0.14); border:1px solid var(--line-soft); border-radius:13px; padding:13px; }
+  .wcard .ar { font-family:-apple-system,sans-serif; font-size:10px; color: var(--faint); letter-spacing:0.1em; text-transform:uppercase;}
+  .wcard .vv { font-size: 16px; margin-top:7px; display:flex; align-items:center; gap:7px; font-family:-apple-system,sans-serif;}
+  .pip { width:8px;height:8px;border-radius:50%; }
+
+  .sec { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color: var(--faint); margin: 34px 0 14px; display:flex; align-items:center; gap:10px;}
+  .sec::after { content:''; flex:1; height:1px; background: var(--line-soft); }
+
+  .ask {
+    width:100%; text-align:left; cursor:pointer; border:none;
+    background: linear-gradient(135deg, var(--gold-bright), var(--gold)); color: var(--plum-deep);
+    border-radius:16px; padding: 20px; font-family:-apple-system,sans-serif;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .ask b { font-size:17px; display:block; }
+  .ask span { font-size:13px; opacity:0.7; }
+  .ask .arr { font-size: 22px; }
+
+  .windows { margin-top: 8px; }
+  .wrow { display:flex; align-items:center; gap:15px; padding:16px 2px; border-bottom:1px solid var(--line-soft); }
+  .wrow:last-child { border-bottom:none; }
+  .wdate { text-align:center; min-width:44px; }
+  .wdate .d { font-size:24px; font-weight:600; line-height:1; color: var(--gold-bright); }
+  .wdate .m { font-family:-apple-system,sans-serif; font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:0.1em; margin-top:4px;}
+  .wbar { flex:1; }
+  .wbar .wt { font-size:17px; }
+  .wbar .ws { font-family:-apple-system,sans-serif; font-size:12px; color:var(--cream-mute); margin-top:3px; line-height:1.4;}
+  .wtag { font-family:-apple-system,sans-serif; font-size:10px; padding:5px 11px; border-radius:20px; white-space:nowrap; letter-spacing:0.04em;}
+  .wtag.open { background: rgba(205,176,122,0.18); color:var(--open); }
+  .wtag.wait { background: rgba(199,154,91,0.16); color:var(--wait); }
+  .wtag.hold { background: rgba(154,111,143,0.22); color:#c79bbb; }
+
+  /* ASK */
+  .qfield { width:100%; background: rgba(0,0,0,0.18); border:1px solid var(--line); border-radius:15px; padding:18px; color:var(--cream); font-family:'Cormorant Garamond',Garamond,serif; font-size:19px; resize:none; }
+  .qfield:focus { outline:2px solid var(--gold); border-color:transparent; }
+  .qfield::placeholder { color: var(--faint); }
+  .chips { display:flex; flex-wrap:wrap; gap:9px; margin-top:14px; }
+  .chip { font-family:-apple-system,sans-serif; font-size:13px; padding:9px 15px; border:1px solid var(--line); border-radius:30px; color:var(--cream-mute); cursor:pointer; background:none;}
+  .chip:hover { border-color:var(--gold); color:var(--gold-bright); }
+  .go { width:100%; margin-top:22px; background: linear-gradient(135deg, var(--gold-bright), var(--gold)); color:var(--plum-deep); border:none; border-radius:15px; padding:17px; font-family:-apple-system,sans-serif; font-size:16px; font-weight:600; cursor:pointer; }
+
+  /* casting */
+  .cast { text-align:center; padding: 80px 0; }
+  .orbit { width:110px; height:110px; margin:0 auto 26px; position:relative; }
+  .orbit .ring { position:absolute; border:1px solid var(--line); border-radius:50%; }
+  .orbit .r1 { inset:0; border-top-color:var(--gold); animation:spin 2.4s linear infinite; }
+  .orbit .r2 { inset:18px; border-top-color:var(--gold-bright); animation:spin 1.7s linear infinite reverse; }
+  .orbit .r3 { inset:36px; border-top-color:var(--gold-faint); animation:spin 1.1s linear infinite; }
+  .orbit .core { position:absolute; inset:46px; border-radius:50%; background:radial-gradient(circle at 35% 35%, var(--gold-bright), var(--gold)); box-shadow:0 0 26px rgba(199,154,91,.55); }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .cast .t { font-family:-apple-system,sans-serif; font-size:14px; color:var(--cream-mute); min-height:22px; letter-spacing:0.04em; }
+
+  /* ANSWER */
+  .ans-q { font-size:22px; line-height:1.4; font-style:italic; color: var(--gold-bright); }
+  .ans-body { font-family:-apple-system,sans-serif; font-size:15px; line-height:1.7; color:var(--cream); margin-top:14px; }
+  .why { margin-top:20px; padding-top:18px; border-top:1px solid var(--line-soft); }
+  .why .wl { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); margin-bottom:14px;}
+  .tr { display:flex; gap:12px; margin-bottom:13px; }
+  .tr .s { font-size:18px; color:var(--gold-bright); min-width:22px; }
+  .tr .x { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); line-height:1.55; }
+  .tr .x b { color:var(--cream); font-weight:600; }
+  .best { margin-top:20px; background:rgba(205,176,122,0.1); border:1px solid rgba(205,176,122,0.32); border-radius:14px; padding:18px; }
+  .best .bl { font-family:-apple-system,sans-serif; font-size:11px; color:var(--open); letter-spacing:0.12em; text-transform:uppercase; }
+  .best .bd { font-size:21px; margin-top:6px; color: var(--gold-bright); }
+  .best .bdd { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); margin-top:5px;}
+  .save { width:100%; margin-top:18px; background:none; border:1px solid var(--gold); color:var(--gold-bright); border-radius:14px; padding:15px; font-family:-apple-system,sans-serif; font-size:15px; cursor:pointer; }
+  .disc { font-family:-apple-system,sans-serif; font-size:11px; color:var(--faint); text-align:center; margin-top:20px; line-height:1.5; }
+
+  /* nav */
+  .nav { position:absolute; bottom:0; left:0; right:0; z-index:3; display:flex; justify-content:space-around;
+    padding: 14px 0 24px; background: linear-gradient(transparent, var(--plum-deep) 40%); }
+  .nav button { background:none; border:none; color:var(--faint); font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:0.08em; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; text-transform:uppercase; }
+  .nav button.on { color: var(--gold-bright); }
+  .nav .ic { width:20px; height:20px; border:1.5px solid currentColor; }
+  .nav .ic.circle { border-radius:50%; }
+  .nav .ic.diamond { transform:rotate(45deg); width:16px; height:16px; }
+  .nav .ic.star { border:none; font-size:18px; line-height:20px; }
+
+  @media (max-width:440px){ .phone{ margin:0 auto; border-radius:0; min-height:100vh; } }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="stars" id="stars"></div>
+  <div class="statusbar"><span>17:15</span><span>✦</span></div>
+
+  <div class="app">
+    <div class="top">
+      <div class="wordmark">
+        <div class="mark">CEIST</div>
+        <div class="tag">Find out your tomorrow</div>
+      </div>
+      <div class="menu"><i></i><i></i><i></i></div>
+    </div>
+    <div class="hairline"></div>
+
+    <!-- HOME -->
+    <section class="screen active" id="home">
+      <div class="greet">Sunday · 21 June</div>
+      <div class="sky-now">The Moon sits in <em>Rohini</em>, your house of home. A day that rewards <em>tending</em>, not launching.</div>
+
+      <div class="verdict">
+        <div class="vlabel">Today, at a glance</div>
+        <div class="vstate"><div class="dot" style="color:var(--wait)"></div><b>Steady — don't force</b></div>
+        <div class="vsub">Good for repair, honest conversations, and finishing what's already begun. A heavy Saturn aspect makes fresh commitments feel weightier than they are. Sit with the big questions one more day.</div>
+        <div class="weather">
+          <div class="wcard"><div class="ar">Work</div><div class="vv"><span class="pip" style="background:var(--wait)"></span>Tend</div></div>
+          <div class="wcard"><div class="ar">Love</div><div class="vv"><span class="pip" style="background:var(--open)"></span>Open</div></div>
+          <div class="wcard"><div class="ar">Money</div><div class="vv"><span class="pip" style="background:var(--hold)"></span>Hold</div></div>
+        </div>
+      </div>
+
+      <div class="sec">Ask</div>
+      <button class="ask" onclick="show('ask')">
+        <div><b>Ask your ceist</b><span>Name a decision — see your windows</span></div>
+        <div class="arr">→</div>
+      </button>
+
+      <div class="sec">Windows ahead</div>
+      <div class="windows">
+        <div class="wrow">
+          <div class="wdate"><div class="d">2</div><div class="m">Jul</div></div>
+          <div class="wbar"><div class="wt">A clean window opens</div><div class="ws">Jupiter turns favourable — your one clear slot for a big commitment</div></div>
+          <div class="wtag open">Open</div>
+        </div>
+        <div class="wrow">
+          <div class="wdate"><div class="d">11</div><div class="m">Jul</div></div>
+          <div class="wbar"><div class="wt">That window closes</div><div class="ws">Decide and act before this for the cleanest support</div></div>
+          <div class="wtag wait">Closing</div>
+        </div>
+        <div class="wrow">
+          <div class="wdate"><div class="d">23</div><div class="m">Jul</div></div>
+          <div class="wbar"><div class="wt">Mercury turns retrograde</div><div class="ws">Avoid signing or sending what you can't revisit</div></div>
+          <div class="wtag hold">Hold</div>
+        </div>
+      </div>
+      <div style="height:90px"></div>
+    </section>
+
+    <!-- ASK -->
+    <section class="screen" id="ask">
+      <div class="greet" style="margin-top:24px">Ask your ceist</div>
+      <div class="sky-now" style="font-size:23px; margin: 12px 0 20px;">What are you deciding?</div>
+      <textarea class="qfield" id="q" rows="3" placeholder="e.g. Should I take the new role, or wait?">Should I hand in my notice now, or wait until after the bonus?</textarea>
+      <div class="chips">
+        <button class="chip" onclick="setQ('Is this a good week to start something new?')">Start something</button>
+        <button class="chip" onclick="setQ('Should I have a hard conversation now?')">Hard talk</button>
+        <button class="chip" onclick="setQ('Good time to commit money?')">Money move</button>
+        <button class="chip" onclick="setQ('Is the timing right to travel?')">Travel</button>
+      </div>
+      <button class="go" onclick="ask()">Read my timing</button>
+      <div class="disc">Ceist offers reflective guidance from your chart. It isn't a substitute for professional, financial, or medical advice — the decision is always yours.</div>
+      <div style="height:90px"></div>
+    </section>
+
+    <!-- CASTING -->
+    <section class="screen" id="casting">
+      <div class="cast">
+        <div class="orbit"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core"></div></div>
+        <div class="t" id="castStep">Placing your chart…</div>
+      </div>
+    </section>
+
+    <!-- ANSWER -->
+    <section class="screen" id="answer">
+      <div class="greet" style="margin-top:24px">Your reading</div>
+      <div class="ans-q" style="margin-top:12px">"Should I hand in my notice now, or wait until after the bonus?"</div>
+
+      <div class="verdict" style="margin-top:20px">
+        <div class="vlabel">The answer your chart gives</div>
+        <div class="vstate"><div class="dot" style="color:var(--wait)"></div><b>Wait — not for long</b></div>
+        <div class="ans-body">Your chart favours patience here. Saturn is still moving through your house of career, and Saturn rewards the long game — leaving before the structure is finished tends to cost more than it gives. The pull to go now is real, but it reads as restlessness, not opportunity.</div>
+        <div class="why">
+          <div class="wl">Why</div>
+          <div class="tr"><span class="s">♄</span><span class="x"><b>Saturn in your 10th house</b> — favours finishing the chapter on your own terms, not walking early.</span></div>
+          <div class="tr"><span class="s">♃</span><span class="x"><b>Jupiter turns favourable, 2–11 July</b> — a brief, clean window where a considered move lands well.</span></div>
+          <div class="tr"><span class="s">☿</span><span class="x"><b>Mercury retrograde from 23 July</b> — avoid resigning or signing in this stretch; words get misread.</span></div>
+        </div>
+      </div>
+
+      <div class="best">
+        <div class="bl">Your clearest window</div>
+        <div class="bd">2–11 July</div>
+        <div class="bdd">If you're set on moving, decide here. After that, hold until mid-August.</div>
+      </div>
+
+      <button class="save" onclick="alert('Demo: saves this window and sets a reminder before it opens.')">Save this window · remind me before it opens</button>
+      <div class="disc">Reflective guidance only — the decision is always yours.</div>
+      <div style="height:90px"></div>
+    </section>
+  </div>
+
+  <div class="nav">
+    <button class="on" id="n-home" onclick="show('home')"><span class="ic circle"></span>Today</button>
+    <button id="n-ask" onclick="show('ask')"><span class="ic diamond"></span>Ask</button>
+    <button id="n-chart" onclick="show('home')"><span class="ic star">✦</span>Chart</button>
+  </div>
+</div>
+
+<script>
+  const stars=document.getElementById('stars');
+  for(let i=0;i<40;i++){const s=document.createElement('div');s.className='star';const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*92+'%';s.style.animationDelay=(Math.random()*5)+'s';stars.appendChild(s);}
+
+  function show(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+    const map={home:'n-home',ask:'n-ask',casting:'n-ask',answer:'n-ask'};
+    const nb=document.getElementById(map[id]); if(nb) nb.classList.add('on');
+    document.querySelector('.app').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function setQ(t){ document.getElementById('q').value=t; }
+  const steps=['Placing your chart…','Reading today\u2019s transits…','Checking your dasha period…','Finding your open windows…'];
+  function ask(){
+    show('casting');
+    const el=document.getElementById('castStep'); let i=0; el.textContent=steps[0];
+    const t=setInterval(()=>{i++; if(i<steps.length){el.textContent=steps[i];} else {clearInterval(t); show('answer');}},640);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — Design Prototype</title>
+<style>
+  :root {
+    --plum:#4a1f3d; --plum-deep:#3a1730;
+    --gold:#c79a5b; --gold-bright:#e0bd84; --gold-faint:#a8854e;
+    --cream:#f3ece2; --cream-mute:#cdbcae; --faint:#9a7e92;
+    --line:#6a3a5a; --line-soft:#5c2a4a;
+    --west:#8fb3d4; --west-faint:#6a96ba;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif;background:#2a1022;color:var(--cream);-webkit-font-smoothing:antialiased;min-height:100vh;}
+  .stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+  .star{position:absolute;background:var(--gold-bright);border-radius:50%;animation:tw 6s infinite ease-in-out;}
+  @keyframes tw{0%,100%{opacity:.08}50%{opacity:.45}}
+  .wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:60px 30px 80px;}
+
+  .header{text-align:center;margin-bottom:64px;}
+  .seal{width:90px;height:90px;margin:0 auto 28px;position:relative;display:grid;place-items:center;}
+  .seal .ring{position:absolute;border-radius:50%;border:1px solid var(--gold-faint);}
+  .seal .ring.outer{inset:0;opacity:.4;animation:slowspin 30s linear infinite;border-style:dashed;}
+  .seal .ring.inner{inset:14px;opacity:.6;}
+  .seal .moon{width:48px;height:48px;border-radius:50%;background:radial-gradient(circle at 32% 30%,var(--gold-bright),var(--gold) 58%,#7c5a2e 96%);box-shadow:0 0 28px rgba(199,154,91,.45);}
+  @keyframes slowspin{to{transform:rotate(360deg)}}
+  .mark{font-size:42px;letter-spacing:0.22em;color:var(--gold);font-weight:600;text-indent:0.22em;}
+  .tag{font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.38em;text-transform:uppercase;color:var(--gold-faint);margin-top:10px;}
+  .subtitle{font-family:-apple-system,sans-serif;font-size:14px;color:var(--cream-mute);margin-top:18px;line-height:1.6;max-width:40ch;margin-left:auto;margin-right:auto;}
+
+  .section-label{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--faint);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--line-soft);}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:48px;}
+  .card{display:block;text-decoration:none;background:rgba(0,0,0,.18);border:1px solid var(--line-soft);border-radius:16px;padding:20px;transition:all .18s;cursor:pointer;}
+  .card:hover{border-color:var(--gold);background:rgba(199,154,91,.07);transform:translateY(-2px);}
+  .card.bridge:hover{border-color:var(--west);}
+  .card .c-eye{font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;margin-bottom:10px;}
+  .card .c-eye.v{color:var(--gold-faint);}
+  .card .c-eye.w{color:var(--west-faint);}
+  .card .c-eye.b{background:linear-gradient(90deg,var(--gold-faint),var(--west-faint));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+  .card .c-title{font-size:20px;font-weight:500;line-height:1.28;margin-bottom:8px;}
+  .card .c-desc{font-family:-apple-system,sans-serif;font-size:12.5px;color:var(--cream-mute);line-height:1.55;}
+  .card .c-arr{font-family:-apple-system,sans-serif;font-size:18px;color:var(--faint);margin-top:14px;}
+  .card:hover .c-arr{color:var(--gold-bright);}
+  .card.bridge:hover .c-arr{color:var(--west-bright);}
+
+  .note{font-family:-apple-system,sans-serif;font-size:11px;color:var(--faint);text-align:center;margin-top:40px;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="wrap">
+
+  <div class="header">
+    <div class="seal">
+      <div class="ring outer"></div>
+      <div class="ring inner"></div>
+      <div class="moon"></div>
+    </div>
+    <div class="mark">CEIST</div>
+    <div class="tag">Find out your tomorrow</div>
+    <div class="subtitle">Design prototypes — Vedic foundation + Western/Vedic bridge layer. Open any screen below.</div>
+  </div>
+
+  <!-- ORIGINAL CEIST -->
+  <div class="section-label">Original Ceist · Vedic foundation</div>
+  <div class="grid">
+    <a class="card" href="ceist-onboarding.html">
+      <div class="c-eye v">Onboarding</div>
+      <div class="c-title">First arrival</div>
+      <div class="c-desc">Splash → welcome → birth data → intent → first reading → paywall</div>
+      <div class="c-arr">→</div>
+    </a>
+    <a class="card" href="ceist-onboarding-signup.html">
+      <div class="c-eye v">Onboarding + signup</div>
+      <div class="c-title">Account-last flow</div>
+      <div class="c-desc">Full onboarding through account creation and trial confirmation</div>
+      <div class="c-arr">→</div>
+    </a>
+    <a class="card" href="ceist-home.html">
+      <div class="c-eye v">Home</div>
+      <div class="c-title">Today screen</div>
+      <div class="c-desc">Moon moment, open ceist, next window, panchang</div>
+      <div class="c-arr">→</div>
+    </a>
+    <a class="card" href="ceist-app.html">
+      <div class="c-eye v">App · all screens</div>
+      <div class="c-title">Today · Ask · Answer</div>
+      <div class="c-desc">Full interactive flow with nav — tap through all three main screens</div>
+      <div class="c-arr">→</div>
+    </a>
+    <a class="card" href="ceist-screens.html">
+      <div class="c-eye v">Reading · Ask · Chart</div>
+      <div class="c-title">Three screens side by side</div>
+      <div class="c-desc">Opened reading, Ask tab, Your chart with dasha and placements</div>
+      <div class="c-arr">→</div>
+    </a>
+    <a class="card" href="ceist-deeper.html">
+      <div class="c-eye v">Deeper layers</div>
+      <div class="c-title">Placement · Dasha · Held reading</div>
+      <div class="c-desc">Moon detail, Jupiter mahadasha ladder, a reading that came back "hold"</div>
+      <div class="c-arr">→</div>
+    </a>
+  </div>
+
+  <!-- BRIDGE LAYER -->
+  <div class="section-label">Western · Vedic bridge · new layer</div>
+  <div class="grid">
+    <a class="card bridge" href="ceist-bridge-chart.html">
+      <div class="c-eye b">Chart · both systems</div>
+      <div class="c-title">Vedic → Western → Bridge</div>
+      <div class="c-desc">Toggle between sidereal and tropical. Side-by-side comparison of where the two maps diverge and converge.</div>
+      <div class="c-arr">→</div>
+    </a>
+    <a class="card bridge" href="ceist-bridge-home.html">
+      <div class="c-eye b">Home · both skies today</div>
+      <div class="c-title">Both Skies Today</div>
+      <div class="c-desc">Collapsible module on the home screen. Expanded view with Summer Solstice dual reading and agreement/divergence panels.</div>
+      <div class="c-arr">→</div>
+    </a>
+    <a class="card bridge" href="ceist-bridge-ask.html">
+      <div class="c-eye b">Ask · amplified signal</div>
+      <div class="c-title">Ask → Cast → Reading</div>
+      <div class="c-desc">System selector in Ask. Dual-orbit casting animation. Reading with source-badged reasons and amplification panel when both traditions agree.</div>
+      <div class="c-arr">→</div>
+    </a>
+  </div>
+
+  <div class="note">All screens are HTML/CSS prototypes · no back-end required · open any file in a browser</div>
+</div>
+
+<script>
+  const el=document.getElementById('stars');
+  for(let i=0;i<55;i++){
+    const s=document.createElement('div');s.className='star';
+    const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=(Math.random()*6)+'s';el.appendChild(s);
+  }
+</script>
+</body>
+</html>

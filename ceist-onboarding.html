@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — find out your tomorrow</title>
+<style>
+  :root {
+    --plum: #4a1f3d; --plum-deep: #3a1730; --plum-rich: #5c2a4a;
+    --gold: #c79a5b; --gold-bright: #e0bd84; --gold-faint: #a8854e;
+    --cream: #f3ece2; --cream-mute: #cdbcae; --faint: #9a7e92;
+    --line: #6a3a5a; --line-soft: #5c2a4a;
+    --open: #cdb07a; --wait: #c79a5b; --hold: #9a6f8f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif; background:#2a1022; color:var(--cream); -webkit-font-smoothing:antialiased; }
+  .sans { font-family:-apple-system,'Segoe UI',Helvetica,sans-serif; }
+
+  .phone {
+    max-width:412px; margin:24px auto; min-height:860px; position:relative;
+    background: linear-gradient(180deg, var(--plum) 0%, var(--plum-deep) 100%);
+    border:1px solid var(--line-soft); border-radius:34px; overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .stars { position:absolute; inset:0; pointer-events:none; opacity:.5; }
+  .star { position:absolute; background:var(--gold-bright); border-radius:50%; animation:tw 5s infinite ease-in-out; }
+  @keyframes tw { 0%,100%{opacity:.15} 50%{opacity:.7} }
+  .statusbar { display:flex; justify-content:space-between; padding:14px 24px 0; font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); position:relative; z-index:2; }
+
+  .stage { position:relative; z-index:2; padding:0 26px; min-height:806px; display:flex; flex-direction:column; }
+
+  .dots { display:flex; gap:7px; justify-content:center; padding:18px 0 4px; min-height:34px; }
+  .pdot { width:7px; height:7px; border-radius:50%; background:var(--line-soft); transition:all .3s; }
+  .pdot.on { background:var(--gold); width:22px; border-radius:5px; }
+
+  .step { display:none; flex-direction:column; flex:1; animation:rise .5s ease; }
+  .step.active { display:flex; }
+  @keyframes rise { from{opacity:0; transform:translateY(10px)} to{opacity:1;transform:none} }
+  .spacer { flex:1; }
+
+  .eyebrow { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold-faint); }
+  h1 { font-size:32px; line-height:1.18; font-weight:500; margin-top:16px; }
+  h1 em { color:var(--gold-bright); font-style:italic; }
+  .body { font-family:-apple-system,sans-serif; font-size:15px; line-height:1.65; color:var(--cream-mute); margin-top:16px; max-width:34ch; }
+
+  .btn { width:100%; background:linear-gradient(135deg,var(--gold-bright),var(--gold)); color:var(--plum-deep); border:none; border-radius:15px; padding:17px; font-family:-apple-system,sans-serif; font-size:16px; font-weight:600; cursor:pointer; margin-bottom:26px; }
+  .link { background:none; border:none; color:var(--faint); font-family:-apple-system,sans-serif; font-size:13px; cursor:pointer; text-align:center; padding:8px; margin-bottom:14px; }
+
+  /* SPLASH */
+  .splash { align-items:center; justify-content:center; text-align:center; }
+  .seal { width:120px; height:120px; margin:0 auto 30px; position:relative; display:grid; place-items:center; }
+  .seal .ring { position:absolute; border-radius:50%; border:1px solid var(--gold-faint); }
+  .seal .ring.outer { inset:0; opacity:.5; animation:slowspin 30s linear infinite; border-style:dashed; }
+  .seal .ring.inner { inset:18px; opacity:.7; }
+  .seal .moon { width:62px; height:62px; border-radius:50%; background:radial-gradient(circle at 32% 30%, var(--gold-bright), var(--gold) 55%, #7c5a2e 95%); box-shadow:0 0 40px rgba(199,154,91,.5); }
+  @keyframes slowspin { to{transform:rotate(360deg)} }
+  .splash .mark { font-size:46px; letter-spacing:0.2em; color:var(--gold); font-weight:600; text-indent:0.2em; }
+  .splash .tag { font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:0.38em; text-transform:uppercase; color:var(--gold-faint); margin-top:10px; }
+  .splash .enter { margin-top:46px; opacity:0; animation:fadein 1s ease 1.2s forwards; }
+  @keyframes fadein { to{opacity:1} }
+  .splash .pulse { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); letter-spacing:0.06em; }
+
+  /* form */
+  .field { margin-top:18px; }
+  .field label { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); display:block; margin-bottom:8px; }
+  .field input, .field select { width:100%; background:rgba(0,0,0,0.18); border:1px solid var(--line); border-radius:13px; padding:15px; color:var(--cream); font-family:-apple-system,sans-serif; font-size:16px; }
+  .field input:focus, .field select:focus { outline:2px solid var(--gold); border-color:transparent; }
+  .row2 { display:flex; gap:11px; }
+  .row2 .field { flex:1; }
+  .hint { font-family:-apple-system,sans-serif; font-size:12px; color:var(--faint); margin-top:8px; line-height:1.45; }
+
+  .opt { width:100%; text-align:left; background:rgba(0,0,0,0.16); border:1px solid var(--line-soft); border-radius:14px; padding:18px; margin-top:12px; cursor:pointer; color:var(--cream); display:flex; align-items:center; gap:14px; font-family:-apple-system,sans-serif; transition:all .15s; }
+  .opt:hover { border-color:var(--gold); }
+  .opt.sel { border-color:var(--gold); background:rgba(199,154,91,.1); }
+  .opt .em { font-size:20px; color:var(--gold-bright); }
+  .opt b { font-size:16px; display:block; }
+  .opt span { font-size:13px; color:var(--cream-mute); }
+
+  /* casting */
+  .cast { text-align:center; margin:auto 0; }
+  .orbit { width:120px; height:120px; margin:0 auto 26px; position:relative; }
+  .orbit .ring { position:absolute; border:1px solid var(--line); border-radius:50%; }
+  .orbit .r1 { inset:0; border-top-color:var(--gold); animation:spin 2.4s linear infinite; }
+  .orbit .r2 { inset:20px; border-top-color:var(--gold-bright); animation:spin 1.7s linear infinite reverse; }
+  .orbit .r3 { inset:40px; border-top-color:var(--gold-faint); animation:spin 1.1s linear infinite; }
+  .orbit .core { position:absolute; inset:52px; border-radius:50%; background:radial-gradient(circle at 35% 35%, var(--gold-bright), var(--gold)); box-shadow:0 0 26px rgba(199,154,91,.55); }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .cast .t { font-family:-apple-system,sans-serif; font-size:15px; color:var(--cream-mute); min-height:22px; letter-spacing:0.04em; }
+
+  /* first reading */
+  .r-eye { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--faint); padding-top:6px; }
+  .r-sign { font-size:23px; line-height:1.4; margin-top:12px; font-weight:500; }
+  .r-sign em { color:var(--gold-bright); font-style:italic; }
+  .verdict { margin-top:20px; border-radius:18px; padding:22px; background:linear-gradient(155deg, rgba(255,255,255,0.05), rgba(0,0,0,0.12)); border:1px solid var(--line); position:relative; overflow:hidden; }
+  .verdict::before { content:''; position:absolute; top:-50px; right:-50px; width:150px; height:150px; border-radius:50%; background:radial-gradient(circle, rgba(199,154,91,.2), transparent 70%); }
+  .vlabel { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); }
+  .vstate { display:flex; align-items:center; gap:12px; margin:14px 0 8px; }
+  .vdot { width:12px; height:12px; border-radius:50%; box-shadow:0 0 12px currentColor; }
+  .vstate b { font-size:26px; font-weight:600; }
+  .vbody { font-family:-apple-system,sans-serif; font-size:14px; line-height:1.65; color:var(--cream); }
+  .why { margin-top:16px; padding-top:16px; border-top:1px solid var(--line-soft); }
+  .tr { display:flex; gap:12px; margin-bottom:11px; }
+  .tr .s { font-size:17px; color:var(--gold-bright); min-width:20px; }
+  .tr .x { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); line-height:1.5; }
+  .tr .x b { color:var(--cream); }
+  .paywall { margin-top:18px; background:rgba(199,154,91,.08); border:1px solid rgba(199,154,91,.3); border-radius:15px; padding:18px; }
+  .paywall .pl { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-bright); }
+  .paywall .pt { font-size:19px; margin-top:7px; line-height:1.35; }
+  .paywall .pp { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); margin-top:9px; line-height:1.5;}
+  .paywall .price { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream); margin-top:12px; }
+  .paywall .price b { color:var(--gold-bright); }
+  .disc { font-family:-apple-system,sans-serif; font-size:11px; color:var(--faint); text-align:center; margin:18px 0; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="stars" id="stars"></div>
+  <div class="statusbar"><span>17:15</span><span>✦</span></div>
+
+  <div class="stage">
+    <div class="dots" id="dots"></div>
+
+    <!-- 0: SPLASH -->
+    <section class="step active splash" data-step="0">
+      <div class="spacer"></div>
+      <div class="seal">
+        <div class="ring outer"></div>
+        <div class="ring inner"></div>
+        <div class="moon"></div>
+      </div>
+      <div class="mark">CEIST</div>
+      <div class="tag">Find out your tomorrow</div>
+      <div class="enter">
+        <button class="link pulse" onclick="go(1)" style="color:var(--cream-mute)">Tap to begin →</button>
+      </div>
+      <div class="spacer"></div>
+    </section>
+
+    <!-- 1: WELCOME -->
+    <section class="step" data-step="1">
+      <div class="spacer"></div>
+      <div style="text-align:center">
+        <div class="eyebrow">Welcome</div>
+        <h1>Know <em>when</em>,<br>not what.</h1>
+        <p class="body" style="margin:16px auto 0">Most astrology tells you who you are. Ceist tells you <em style="color:var(--gold-bright);font-style:italic">when</em> to act — clean windows for the decisions that matter, and when to wait.</p>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn" onclick="go(2)">Begin</button>
+    </section>
+
+    <!-- 2: BIRTH DATA -->
+    <section class="step" data-step="2">
+      <div style="padding-top:10px">
+        <div class="eyebrow">Your chart</div>
+        <h1>When did you <em>arrive</em>?</h1>
+        <p class="body">Your birth moment fixes the sky we read from. The more exact the time, the sharper your windows.</p>
+      </div>
+      <div class="field"><label>Date of birth</label><input type="date" id="dob" value="1989-03-14"></div>
+      <div class="row2">
+        <div class="field"><label>Time</label><input type="time" id="tob" value="04:20"></div>
+        <div class="field"><label>Don't know it?</label><select><option>Exact</option><option>Roughly</option><option>Not sure</option></select></div>
+      </div>
+      <div class="field"><label>Place of birth</label><input type="text" value="Dungannon, Northern Ireland"></div>
+      <p class="hint">Stored on your device, used only to compute your chart. Never sold, never shared.</p>
+      <div class="spacer"></div>
+      <button class="btn" onclick="go(3)">Continue</button>
+    </section>
+
+    <!-- 3: INTENT -->
+    <section class="step" data-step="3">
+      <div style="padding-top:10px">
+        <div class="eyebrow">What brings you</div>
+        <h1>What's the <em>weight</em> on you?</h1>
+        <p class="body">This tunes your first reading. You can ask about anything later.</p>
+      </div>
+      <div id="intents">
+        <button class="opt" onclick="pick(this)"><span class="em">⚖︎</span><span><b>A decision I keep circling</b><span>Something I can't tell if it's time for</span></span></button>
+        <button class="opt sel" onclick="pick(this)"><span class="em">↗</span><span><b>A change I'm weighing</b><span>A job, a move, a leap</span></span></button>
+        <button class="opt" onclick="pick(this)"><span class="em">♡</span><span><b>A relationship question</b><span>When to speak, when to wait</span></span></button>
+        <button class="opt" onclick="pick(this)"><span class="em">✦</span><span><b>Just curious</b><span>Show me how this works</span></span></button>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn" onclick="cast()">Cast my first reading</button>
+    </section>
+
+    <!-- 4: CASTING -->
+    <section class="step" data-step="4">
+      <div class="cast">
+        <div class="orbit"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div><div class="core"></div></div>
+        <div class="t" id="castStep">Placing your chart…</div>
+      </div>
+    </section>
+
+    <!-- 5: FIRST READING -->
+    <section class="step" data-step="5">
+      <div class="r-eye">Your first reading · Sunday 21 June</div>
+      <div class="r-sign">Sun in <em>Pisces</em>, Moon in <em>Rohini</em>. You read the room before you move — and right now the room asks you to <em>wait a beat</em>.</div>
+
+      <div class="verdict">
+        <div class="vlabel">On the change you're weighing</div>
+        <div class="vstate"><div class="vdot" style="color:var(--wait)"></div><b>Wait — not for long</b></div>
+        <div class="vbody">Your chart favours patience over a leap this month. A brief, clean window opens in early July where a considered move is well supported. Until then, this is a season for finishing what's already in motion.</div>
+        <div class="why">
+          <div class="tr"><span class="s">♄</span><span class="x"><b>Saturn in your 10th house</b> — favours finishing the chapter on your own terms, not leaving early.</span></div>
+          <div class="tr"><span class="s">♃</span><span class="x"><b>Jupiter turns favourable, 2–11 July</b> — a short, clean window where a move lands well.</span></div>
+        </div>
+      </div>
+
+      <div class="paywall">
+        <div class="pl">✦ Ceist Plus</div>
+        <div class="pt">Ask any ceist — and see every window through 2027.</div>
+        <div class="pp">Your free reading covers this month. Plus opens unlimited questions, the full year of dated windows, and a reminder before each one arrives.</div>
+        <div class="price">Free for 7 days, then <b>£6.99/month</b>. Cancel anytime.</div>
+      </div>
+
+      <button class="btn" style="margin-top:18px" onclick="alert('Demo: starts the 7-day trial and unlocks unlimited questions + the full-year window map.')">Start free trial</button>
+      <button class="link" onclick="alert('Demo: continues with the free monthly reading only.')">Keep the free reading for now</button>
+      <div class="disc">Reflective guidance only — the decision is always yours. Ceist isn't a substitute for professional, financial, or medical advice.</div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+  const stars=document.getElementById('stars');
+  for(let i=0;i<40;i++){const s=document.createElement('div');s.className='star';const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*92+'%';s.style.animationDelay=(Math.random()*5)+'s';stars.appendChild(s);}
+
+  const dotsWrap=document.getElementById('dots');
+  const dotCount=4;   // welcome, birth, intent, reading (splash + casting are transitional)
+  for(let i=0;i<dotCount;i++){const d=document.createElement('div');d.className='pdot';dotsWrap.appendChild(d);}
+  function setDots(step){
+    // splash(0)=hide dots; 1..5 map onto 4 dots, casting shares with reading
+    const map={0:-1,1:0,2:1,3:2,4:3,5:3};
+    const idx=map[step];
+    dotsWrap.style.visibility = idx<0 ? 'hidden':'visible';
+    [...dotsWrap.children].forEach((d,i)=>d.classList.toggle('on', i<=idx));
+  }
+  function go(step){
+    document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+    document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
+    setDots(step);
+  }
+  function pick(el){ document.querySelectorAll('#intents .opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); }
+  const steps=['Placing your chart…','Reading today\u2019s transits…','Checking your dasha period…','Finding your open windows…','Writing your reading…'];
+  function cast(){
+    go(4);
+    const el=document.getElementById('castStep'); let i=0; el.textContent=steps[0];
+    const t=setInterval(()=>{i++; if(i<steps.length){el.textContent=steps[i];} else {clearInterval(t); go(5);}},620);
+  }
+  setDots(0);
+</script>
+</body>
+</html>

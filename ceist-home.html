@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — entering</title>
+<style>
+  :root {
+    --plum: #4a1f3d; --plum-deep: #3a1730; --plum-rich: #5c2a4a;
+    --gold: #c79a5b; --gold-bright: #e0bd84; --gold-faint: #a8854e;
+    --cream: #f3ece2; --cream-mute: #cdbcae; --faint: #9a7e92;
+    --line: #6a3a5a; --line-soft: #5c2a4a;
+    --open: #cdb07a; --wait: #c79a5b; --hold: #9a6f8f; --rest: #8f9ab0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif; background:#2a1022; color:var(--cream); -webkit-font-smoothing:antialiased; }
+  .sans { font-family:-apple-system,'Segoe UI',Helvetica,sans-serif; }
+
+  .phone {
+    max-width:412px; margin:24px auto; min-height:880px; position:relative;
+    background: radial-gradient(120% 80% at 50% 0%, var(--plum-rich) 0%, var(--plum) 38%, var(--plum-deep) 100%);
+    border:1px solid var(--line-soft); border-radius:34px; overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .stars { position:absolute; inset:0; pointer-events:none; opacity:.45; }
+  .star { position:absolute; background:var(--gold-bright); border-radius:50%; animation:tw 6s infinite ease-in-out; }
+  @keyframes tw { 0%,100%{opacity:.12} 50%{opacity:.6} }
+  .statusbar { display:flex; justify-content:space-between; padding:14px 24px 0; font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); position:relative; z-index:2; }
+
+  .app { position:relative; z-index:2; padding: 4px 26px 120px; }
+
+  /* arrival header — minimal */
+  .top { display:flex; align-items:center; justify-content:space-between; padding:18px 0 6px; }
+  .mark { font-size:21px; letter-spacing:0.2em; color:var(--gold); font-weight:600; text-indent:0.2em; }
+  .av { width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:rgba(0,0,0,0.18); }
+
+  /* the one true thing: the moon + the verb */
+  .moment { text-align:center; padding: 34px 0 8px; animation:breathe 1s ease; }
+  @keyframes breathe { from{opacity:0; transform:translateY(8px)} to{opacity:1;transform:none} }
+  .moonwrap { width:120px; height:120px; margin:0 auto 26px; position:relative; display:grid; place-items:center; }
+  .halo { position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle, rgba(199,154,91,.28), transparent 68%); animation:pulse 5s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1); opacity:.8} 50%{transform:scale(1.12); opacity:1} }
+  .moon { width:74px; height:74px; border-radius:50%; position:relative; overflow:hidden;
+    background:radial-gradient(circle at 34% 30%, var(--gold-bright), var(--gold) 58%, #7c5a2e 96%);
+    box-shadow:0 0 36px rgba(199,154,91,.45); }
+  /* waxing shadow */
+  .moon::after { content:''; position:absolute; inset:0; border-radius:50%;
+    background:linear-gradient(90deg, transparent 52%, rgba(58,23,48,0.66) 78%); }
+  .phase { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--gold-faint); }
+  .moon-line { font-size:25px; line-height:1.38; margin-top:14px; font-weight:500; max-width:24ch; margin-left:auto; margin-right:auto; }
+  .moon-line em { color:var(--gold-bright); font-style:italic; }
+  .verb { display:inline-flex; align-items:center; gap:9px; margin-top:22px; padding:9px 20px; border:1px solid var(--line); border-radius:30px; font-family:-apple-system,sans-serif; font-size:14px; letter-spacing:0.04em; color:var(--cream); }
+  .verb .vd { width:8px; height:8px; border-radius:50%; background:var(--wait); box-shadow:0 0 10px var(--wait); }
+
+  /* contemplative line — the dharma register */
+  .reflect { text-align:center; margin:34px auto 0; max-width:30ch; }
+  .reflect .q { font-size:20px; line-height:1.5; font-style:italic; color:var(--cream); opacity:.92; }
+  .reflect .qm { color:var(--gold-faint); font-size:26px; line-height:0; vertical-align:-0.2em; }
+
+  .rule { height:1px; background:linear-gradient(90deg, transparent, var(--line), transparent); margin:36px 0 0; }
+
+  /* your open ceist — soft resumption */
+  .sec { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--faint); margin:30px 0 14px; }
+  .resume { background:rgba(0,0,0,0.16); border:1px solid var(--line-soft); border-radius:16px; padding:18px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; cursor:pointer; transition:border-color .15s; }
+  .resume:hover { border-color:var(--gold); }
+  .resume .rq { font-size:18px; line-height:1.35; }
+  .resume .rs { font-family:-apple-system,sans-serif; font-size:12.5px; color:var(--cream-mute); margin-top:6px; }
+  .resume .rs b { color:var(--gold-bright); }
+  .resume .chev { color:var(--gold-faint); font-size:22px; flex-shrink:0; }
+
+  /* next window — one horizon, dated, no urgency */
+  .horizon { margin-top:14px; display:flex; align-items:center; gap:16px; padding:16px 4px; }
+  .hdate { text-align:center; min-width:46px; }
+  .hdate .d { font-size:25px; font-weight:600; line-height:1; color:var(--gold-bright); }
+  .hdate .m { font-family:-apple-system,sans-serif; font-size:10px; color:var(--faint); text-transform:uppercase; letter-spacing:0.1em; margin-top:5px; }
+  .hbar .ht { font-size:17px; }
+  .hbar .hs { font-family:-apple-system,sans-serif; font-size:12.5px; color:var(--cream-mute); margin-top:4px; line-height:1.4; }
+
+  /* panchang — the quiet almanac, available not insisted */
+  .panchang { margin-top:16px; background:rgba(0,0,0,0.12); border:1px solid var(--line-soft); border-radius:16px; overflow:hidden; }
+  .pc-head { width:100%; display:flex; align-items:center; justify-content:space-between; padding:16px 20px; background:none; border:none; color:var(--cream); cursor:pointer; font-family:-apple-system,sans-serif; }
+  .pc-head .pl { font-size:13px; letter-spacing:0.04em; }
+  .pc-head .pr { font-size:12px; color:var(--faint); display:flex; align-items:center; gap:8px; }
+  .pc-body { display:none; padding:4px 20px 20px; }
+  .pc-body.open { display:block; }
+  .pc-row { display:flex; justify-content:space-between; padding:11px 0; border-top:1px solid var(--line-soft); font-family:-apple-system,sans-serif; font-size:13px; }
+  .pc-row .k { color:var(--faint); letter-spacing:0.04em; }
+  .pc-row .v { color:var(--cream); }
+  .pc-row .v em { color:var(--gold-bright); font-style:normal; font-family:'Cormorant Garamond',serif; font-size:15px; }
+
+  /* floating ask — the single primary action */
+  .ask-fab { position:absolute; bottom:96px; left:26px; right:26px; z-index:4;
+    background:linear-gradient(135deg, var(--gold-bright), var(--gold)); color:var(--plum-deep);
+    border:none; border-radius:16px; padding:18px; font-family:-apple-system,sans-serif; font-size:16px; font-weight:600;
+    cursor:pointer; box-shadow:0 12px 30px rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; gap:10px; }
+
+  /* bottom nav */
+  .nav { position:absolute; bottom:0; left:0; right:0; z-index:3; display:flex; justify-content:space-around;
+    padding:14px 0 24px; background:linear-gradient(transparent, var(--plum-deep) 45%); }
+  .nav button { background:none; border:none; color:var(--faint); font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:0.08em; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; text-transform:uppercase; }
+  .nav button.on { color:var(--gold-bright); }
+  .nav .ic { width:20px; height:20px; border:1.5px solid currentColor; }
+  .nav .ic.circle { border-radius:50%; }
+  .nav .ic.diamond { transform:rotate(45deg); width:16px; height:16px; }
+  .nav .ic.star { border:none; font-size:18px; line-height:20px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="stars" id="stars"></div>
+  <div class="statusbar"><span>17:15</span><span>✦</span></div>
+
+  <div class="app">
+    <div class="top">
+      <div class="mark">CEIST</div>
+      <div class="av"></div>
+    </div>
+
+    <!-- THE ONE TRUE THING -->
+    <div class="moment">
+      <div class="moonwrap">
+        <div class="halo"></div>
+        <div class="moon"></div>
+      </div>
+      <div class="phase">Waxing · Shukla Paksha</div>
+      <div class="moon-line">The Moon moves through <em>Rohini</em>, your house of home and roots.</div>
+      <div class="verb"><span class="vd"></span> A day to tend, not to launch</div>
+    </div>
+
+    <!-- CONTEMPLATIVE LINE -->
+    <div class="reflect">
+      <div class="q"><span class="qm">“</span>What is rooted is easy to nourish. Tend the ground today; the leaving can wait for its season.<span class="qm">”</span></div>
+    </div>
+
+    <div class="rule"></div>
+
+    <!-- YOUR OPEN CEIST -->
+    <div class="sec">Your open ceist</div>
+    <div class="resume" onclick="alert('Demo: reopens your reading on this question, with the full window detail.')">
+      <div>
+        <div class="rq">Should I hand in my notice now, or wait?</div>
+        <div class="rs">Your clean window opens in <b>11 days</b> · 2 July</div>
+      </div>
+      <div class="chev">›</div>
+    </div>
+
+    <!-- NEXT WINDOW -->
+    <div class="sec">On the horizon</div>
+    <div class="horizon">
+      <div class="hdate"><div class="d">2</div><div class="m">Jul</div></div>
+      <div class="hbar">
+        <div class="ht">A clean window opens</div>
+        <div class="hs">Jupiter turns favourable — the one clear slot this season for a considered move.</div>
+      </div>
+    </div>
+
+    <!-- PANCHANG (quiet, collapsible) -->
+    <div class="panchang">
+      <button class="pc-head" onclick="togglePanchang(this)">
+        <span class="pl">Today's panchang</span>
+        <span class="pr">the day's almanac <span id="pcaret">+</span></span>
+      </button>
+      <div class="pc-body" id="pcbody">
+        <div class="pc-row"><span class="k">Tithi</span><span class="v"><em>Shukla Saptami</em> · 7th lunar day</span></div>
+        <div class="pc-row"><span class="k">Nakshatra</span><span class="v"><em>Rohini</em> · until 21:40</span></div>
+        <div class="pc-row"><span class="k">Yoga</span><span class="v"><em>Saubhagya</em> · wellbeing</span></div>
+        <div class="pc-row"><span class="k">Moon sign</span><span class="v"><em>Vrishabha</em> · Taurus</span></div>
+        <div class="pc-row"><span class="k">Ruling period</span><span class="v"><em>Jupiter</em> mahadasha</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="ask-fab" onclick="alert('Demo: opens Ask — name a decision, see your windows.')">Ask your ceist</button>
+
+  <div class="nav">
+    <button class="on"><span class="ic circle"></span>Today</button>
+    <button><span class="ic diamond"></span>Ask</button>
+    <button><span class="ic star">✦</span>Chart</button>
+  </div>
+</div>
+
+<script>
+  const stars=document.getElementById('stars');
+  for(let i=0;i<38;i++){const s=document.createElement('div');s.className='star';const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*55+'%';s.style.animationDelay=(Math.random()*6)+'s';stars.appendChild(s);}
+  function togglePanchang(btn){
+    const body=document.getElementById('pcbody');
+    const caret=document.getElementById('pcaret');
+    body.classList.toggle('open');
+    caret.textContent = body.classList.contains('open') ? '−' : '+';
+  }
+</script>
+</body>
+</html>

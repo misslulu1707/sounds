@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — deeper layer</title>
+<style>
+  :root {
+    --plum: #4a1f3d; --plum-deep: #3a1730; --plum-rich: #5c2a4a;
+    --gold: #c79a5b; --gold-bright: #e0bd84; --gold-faint: #a8854e;
+    --cream: #f3ece2; --cream-mute: #cdbcae; --faint: #9a7e92;
+    --line: #6a3a5a; --line-soft: #5c2a4a;
+    --open: #cdb07a; --wait: #c79a5b; --hold: #9a6f8f; --rest: #8f9ab0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif; background:#1c0a17; color:var(--cream); -webkit-font-smoothing:antialiased; padding:20px; }
+  .sans { font-family:-apple-system,'Segoe UI',Helvetica,sans-serif; }
+
+  .rail { display:flex; gap:26px; flex-wrap:wrap; justify-content:center; }
+  .caption { text-align:center; font-family:-apple-system,sans-serif; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold-faint); margin-bottom:6px; }
+  .subcap { text-align:center; font-family:-apple-system,sans-serif; font-size:11px; color:var(--faint); margin-bottom:12px; }
+
+  .phone {
+    width:392px; max-width:100%; min-height:840px; position:relative;
+    background: radial-gradient(120% 80% at 50% 0%, var(--plum-rich) 0%, var(--plum) 38%, var(--plum-deep) 100%);
+    border:1px solid var(--line-soft); border-radius:34px; overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .stars { position:absolute; inset:0; pointer-events:none; opacity:.4; }
+  .star { position:absolute; background:var(--gold-bright); border-radius:50%; animation:tw 6s infinite ease-in-out; }
+  @keyframes tw { 0%,100%{opacity:.1} 50%{opacity:.55} }
+  .statusbar { display:flex; justify-content:space-between; padding:14px 24px 0; font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); position:relative; z-index:2; }
+  .app { position:relative; z-index:2; padding:4px 24px 110px; }
+
+  .nav-top { display:flex; align-items:center; gap:14px; padding:16px 0 6px; }
+  .back { background:none; border:none; color:var(--gold-bright); font-size:24px; cursor:pointer; line-height:1; }
+  .nav-top .title { font-family:-apple-system,sans-serif; font-size:12px; letter-spacing:0.2em; text-transform:uppercase; color:var(--faint); }
+  .rule { height:1px; background:linear-gradient(90deg, transparent, var(--line), transparent); margin:10px 0 0; }
+  .sec { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--faint); margin:28px 0 14px; }
+
+  /* ===== PLACEMENT DETAIL ===== */
+  .glyph-hero { text-align:center; padding:30px 0 6px; }
+  .glyph-hero .gsym { font-size:54px; color:var(--gold-bright); line-height:1; text-shadow:0 0 30px rgba(199,154,91,.4); }
+  .glyph-hero .gname { font-size:26px; margin-top:16px; font-weight:500; }
+  .glyph-hero .gsign { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); margin-top:6px; letter-spacing:0.04em; }
+  .meta-strip { display:flex; gap:10px; margin-top:24px; }
+  .ms { flex:1; background:rgba(0,0,0,0.16); border:1px solid var(--line-soft); border-radius:13px; padding:14px 10px; text-align:center; }
+  .ms .ml { font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--faint); }
+  .ms .mv { font-size:17px; color:var(--gold-bright); margin-top:6px; }
+  .prose { font-family:-apple-system,sans-serif; font-size:14.5px; line-height:1.7; color:var(--cream); margin-top:8px; }
+  .prose + .prose { margin-top:14px; }
+  .tends { margin-top:18px; background:linear-gradient(155deg, rgba(199,154,91,.09), rgba(0,0,0,0.1)); border:1px solid var(--line-soft); border-radius:14px; padding:18px; }
+  .tends .tl { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--gold-faint); margin-bottom:10px; }
+  .tends ul { list-style:none; }
+  .tends li { font-family:-apple-system,sans-serif; font-size:13.5px; color:var(--cream-mute); line-height:1.5; padding-left:18px; position:relative; margin-bottom:8px; }
+  .tends li::before { content:'·'; color:var(--gold-bright); position:absolute; left:4px; font-size:18px; top:-2px; }
+  .reflect-sm { text-align:center; margin:24px auto 0; max-width:32ch; font-size:18px; font-style:italic; line-height:1.5; color:var(--cream); opacity:.9; }
+  .reflect-sm .qm { color:var(--gold-faint); }
+  .note { font-family:-apple-system,sans-serif; font-size:11px; color:var(--faint); text-align:center; margin-top:20px; line-height:1.5; }
+
+  /* ===== DASHA DETAIL ===== */
+  .dasha-hero { text-align:center; padding:26px 0 6px; }
+  .dasha-hero .dphase { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold-faint); }
+  .dasha-hero .dtitle { font-size:27px; margin-top:14px; font-weight:500; }
+  .dasha-hero .dtitle em { color:var(--gold-bright); font-style:italic; }
+  .dasha-hero .dyears { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); margin-top:8px; }
+  .ladder { margin-top:26px; }
+  .lr { display:flex; align-items:center; gap:14px; padding:14px 2px; }
+  .lr .lsym { font-size:17px; min-width:24px; text-align:center; color:var(--gold-faint); }
+  .lr .lbody { flex:1; }
+  .lr .ln { font-size:16px; }
+  .lr .lspan { font-family:-apple-system,sans-serif; font-size:11.5px; color:var(--faint); margin-top:2px; }
+  .lr.now { background:linear-gradient(155deg, rgba(199,154,91,.12), rgba(0,0,0,0.1)); border:1px solid rgba(199,154,91,.3); border-radius:13px; padding:14px 14px; }
+  .lr.now .lsym, .lr.now .ln { color:var(--gold-bright); }
+  .lr.now .ln b { font-weight:600; }
+  .lr.past { opacity:.45; }
+  .lr.future { opacity:.6; }
+  .timebar { height:8px; background:rgba(0,0,0,0.25); border-radius:5px; margin-top:8px; overflow:hidden; display:flex; }
+  .timebar i { height:100%; }
+  .meaning { margin-top:24px; }
+  .meaning .prose { margin-top:0; }
+
+  /* ===== HELD READING ===== */
+  .ans-q { font-size:23px; line-height:1.4; font-style:italic; color:var(--gold-bright); margin-top:22px; }
+  .verdict { margin-top:20px; border-radius:18px; padding:22px; background:linear-gradient(155deg, rgba(255,255,255,0.05), rgba(0,0,0,0.12)); border:1px solid var(--line); position:relative; overflow:hidden; }
+  .verdict::before { content:''; position:absolute; top:-50px; right:-50px; width:150px; height:150px; border-radius:50%; background:radial-gradient(circle, rgba(154,111,143,.22), transparent 70%); }
+  .vlabel { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); }
+  .vstate { display:flex; align-items:center; gap:12px; margin:14px 0 8px; }
+  .vdot { width:12px; height:12px; border-radius:50%; box-shadow:0 0 12px currentColor; }
+  .vstate b { font-size:26px; font-weight:600; }
+  .vbody { font-family:-apple-system,sans-serif; font-size:14px; line-height:1.7; color:var(--cream); }
+  .why { margin-top:18px; padding-top:16px; border-top:1px solid var(--line-soft); }
+  .why .wl { font-family:-apple-system,sans-serif; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint); margin-bottom:14px; }
+  .tr { display:flex; gap:12px; margin-bottom:13px; }
+  .tr .s { font-size:18px; color:var(--gold-bright); min-width:22px; }
+  .tr .x { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); line-height:1.55; }
+  .tr .x b { color:var(--cream); }
+  .revisit { margin-top:18px; background:rgba(143,154,176,0.1); border:1px solid rgba(143,154,176,0.3); border-radius:14px; padding:18px; }
+  .revisit .rl { font-family:-apple-system,sans-serif; font-size:11px; color:var(--rest); letter-spacing:0.12em; text-transform:uppercase; }
+  .revisit .rd { font-size:20px; margin-top:6px; color:var(--cream); }
+  .revisit .rdd { font-family:-apple-system,sans-serif; font-size:13px; color:var(--cream-mute); margin-top:5px; }
+  .save { width:100%; margin-top:20px; background:none; border:1px solid var(--gold); color:var(--gold-bright); border-radius:14px; padding:15px; font-family:-apple-system,sans-serif; font-size:14px; cursor:pointer; }
+  .disc { font-family:-apple-system,sans-serif; font-size:11px; color:var(--faint); text-align:center; margin-top:18px; line-height:1.5; }
+
+  .navbar { position:absolute; bottom:0; left:0; right:0; z-index:3; display:flex; justify-content:space-around;
+    padding:14px 0 24px; background:linear-gradient(transparent, var(--plum-deep) 45%); }
+  .navbar button { background:none; border:none; color:var(--faint); font-family:-apple-system,sans-serif; font-size:10px; letter-spacing:0.08em; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; text-transform:uppercase; }
+  .navbar button.on { color:var(--gold-bright); }
+  .navbar .ic { width:20px; height:20px; border:1.5px solid currentColor; }
+  .navbar .ic.circle { border-radius:50%; }
+  .navbar .ic.diamond { transform:rotate(45deg); width:16px; height:16px; }
+  .navbar .ic.star { border:none; font-size:18px; line-height:20px; }
+</style>
+</head>
+<body>
+<div class="rail">
+
+  <!-- ============ A. PLACEMENT DETAIL (tap Moon in Rohini) ============ -->
+  <div>
+    <div class="caption">From Chart → tap a placement</div>
+    <div class="subcap">Moon in Taurus · Rohini</div>
+    <div class="phone">
+      <div class="stars" id="s1"></div>
+      <div class="statusbar"><span>17:15</span><span>✦</span></div>
+      <div class="app">
+        <div class="nav-top"><button class="back">‹</button><span class="title">Your chart · Moon</span></div>
+        <div class="rule"></div>
+
+        <div class="glyph-hero">
+          <div class="gsym">☾</div>
+          <div class="gname">Moon in Taurus</div>
+          <div class="gsign">Rohini nakshatra · 5th house · exalted</div>
+        </div>
+
+        <div class="meta-strip">
+          <div class="ms"><div class="ml">Quality</div><div class="mv">Earth</div></div>
+          <div class="ms"><div class="ml">Ruler</div><div class="mv">Venus</div></div>
+          <div class="ms"><div class="ml">Symbol</div><div class="mv">Chariot</div></div>
+        </div>
+
+        <div class="sec">What it carries</div>
+        <p class="prose">In Vedic astrology the Moon is the mind and the heart — how you feel your way through the world. Yours sits exalted in Taurus, its strongest seat, in Rohini: the nakshatra of growth, beauty, and rootedness.</p>
+        <p class="prose">This is a steady, nourishing emotional nature. You attach deeply to home and to what you build, and you grow things slowly — relationships, work, a sense of place. The 5th house places that warmth in creativity and in what you love.</p>
+
+        <div class="tends">
+          <div class="tl">In timing, this tends toward</div>
+          <ul>
+            <li>Favouring patience and slow consolidation over sudden leaps</li>
+            <li>Decisions that protect home, roots, and what's already growing</li>
+            <li>A pull to nurture rather than uproot — worth noticing when restlessness mimics readiness</li>
+          </ul>
+        </div>
+
+        <div class="reflect-sm"><span class="qm">“</span>The deep-rooted tree fears no wind. Tend what holds you.<span class="qm">”</span></div>
+
+        <div class="note">This reads your placement in the Lahiri sidereal frame.<br>It describes tendencies, never fixed fate.</div>
+      </div>
+      <div class="navbar">
+        <button><span class="ic circle"></span>Today</button>
+        <button><span class="ic diamond"></span>Ask</button>
+        <button class="on"><span class="ic star">✦</span>Chart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ B. DASHA DETAIL (tap the ruling period) ============ -->
+  <div>
+    <div class="caption">From Chart → tap your ruling period</div>
+    <div class="subcap">Jupiter mahadasha · Saturn within</div>
+    <div class="phone">
+      <div class="stars" id="s2"></div>
+      <div class="statusbar"><span>17:15</span><span>✦</span></div>
+      <div class="app">
+        <div class="nav-top"><button class="back">‹</button><span class="title">Your ruling period</span></div>
+        <div class="rule"></div>
+
+        <div class="dasha-hero">
+          <div class="dphase">Mahadasha · the great period</div>
+          <div class="dtitle">You are in <em>Jupiter</em></div>
+          <div class="dyears">A 16-year season · March 2014 → March 2030</div>
+        </div>
+
+        <div class="timebar" style="margin-top:22px">
+          <i style="width:62%; background:linear-gradient(90deg,var(--gold),var(--gold-bright))"></i>
+          <i style="width:38%; background:rgba(0,0,0,0.25)"></i>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-family:-apple-system,sans-serif; font-size:11px; color:var(--faint); margin-top:8px;">
+          <span>10 years in</span><span>6 years remain</span>
+        </div>
+
+        <div class="sec">Within it now · Antardasha</div>
+        <div class="ladder">
+          <div class="lr past"><span class="lsym">♃</span><div class="lbody"><div class="ln">Jupiter / Jupiter</div><div class="lspan">2014 – 2016</div></div></div>
+          <div class="lr past"><span class="lsym">♄</span><div class="lbody"><div class="ln">Jupiter / Saturn</div><div class="lspan">2016 – 2019 · passed</div></div></div>
+          <div class="lr past"><span class="lsym">☿</span><div class="lbody"><div class="ln">Jupiter / Mercury</div><div class="lspan">2019 – 2022</div></div></div>
+          <div class="lr now"><span class="lsym">♄</span><div class="lbody"><div class="ln">Jupiter / <b>Saturn</b> · now</div><div class="lspan">Mar 2022 – Mar 2025 · the long teacher within the benefic</div></div></div>
+          <div class="lr future"><span class="lsym">☿</span><div class="lbody"><div class="ln">Jupiter / Mercury</div><div class="lspan">from Mar 2025</div></div></div>
+        </div>
+
+        <div class="meaning">
+          <div class="sec">What this season asks</div>
+          <p class="prose">Jupiter's great period is one of growth, meaning, and widening — a benefic time to build something that lasts. But you are in its Saturn sub-period: expansion held inside discipline. The lesson is patience. Things ripen, but on Saturn's timetable, not your impatience.</p>
+          <p class="prose">This is why a clean leap rarely serves you right now — the season rewards finishing and consolidating before the next door opens with Mercury in 2025.</p>
+        </div>
+
+        <div class="reflect-sm"><span class="qm">“</span>Even Jupiter waits for Saturn's nod.<span class="qm">”</span></div>
+
+        <div class="note">Vimshottari dasha · computed from your Moon's nakshatra.</div>
+      </div>
+      <div class="navbar">
+        <button><span class="ic circle"></span>Today</button>
+        <button><span class="ic diamond"></span>Ask</button>
+        <button class="on"><span class="ic star">✦</span>Chart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ C. HELD READING (tap recent ceist: "list the flat") ============ -->
+  <div>
+    <div class="caption">From Ask → tap a recent ceist</div>
+    <div class="subcap">A reading that came back "hold"</div>
+    <div class="phone">
+      <div class="stars" id="s3"></div>
+      <div class="statusbar"><span>17:15</span><span>✦</span></div>
+      <div class="app">
+        <div class="nav-top"><button class="back">‹</button><span class="title">Your reading · 2 weeks ago</span></div>
+        <div class="rule"></div>
+
+        <div class="ans-q">"Is it time to list the flat?"</div>
+
+        <div class="verdict">
+          <div class="vlabel">The answer your chart gave</div>
+          <div class="vstate"><div class="vdot" style="color:var(--hold)"></div><b>Hold</b></div>
+          <div class="vbody">The sky offered no clean support for a sale this season, and one aspect actively cautioned against committing the asset now. This isn't a "no" — it's a "not yet." The conditions for a good sale aren't gathered.</div>
+          <div class="why">
+            <div class="wl">Why</div>
+            <div class="tr"><span class="s">♄</span><span class="x"><b>Saturn squares your Venus</b> — a season for conserving assets, not releasing them.</span></div>
+            <div class="tr"><span class="s">☾</span><span class="x"><b>No favourable property window</b> formed in the 90 days scanned.</span></div>
+          </div>
+        </div>
+
+        <div class="revisit">
+          <div class="rl">When to ask again</div>
+          <div class="rd">After mid-September</div>
+          <div class="rdd">Saturn's pressure on Venus eases then. Ceist will re-scan and let you know if a window forms.</div>
+        </div>
+
+        <div class="reflect-sm"><span class="qm">“</span>To hold is also a decision. Stillness is not the same as delay.<span class="qm">”</span></div>
+
+        <button class="save">Remind me to revisit · September ✓</button>
+        <div class="disc">Reflective guidance only — the decision is always yours. Not financial advice.</div>
+      </div>
+      <div class="navbar">
+        <button><span class="ic circle"></span>Today</button>
+        <button class="on"><span class="ic diamond"></span>Ask</button>
+        <button><span class="ic star">✦</span>Chart</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  ['s1','s2','s3'].forEach(id=>{
+    const el=document.getElementById(id);
+    for(let i=0;i<28;i++){const s=document.createElement('div');s.className='star';const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*60+'%';s.style.animationDelay=(Math.random()*6)+'s';el.appendChild(s);}
+  });
+</script>
+</body>
+</html>
