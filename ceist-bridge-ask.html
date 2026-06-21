@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — Ask, Both Skies Reading</title>
+<style>
+  :root {
+    --plum:#4a1f3d; --plum-deep:#3a1730; --plum-rich:#5c2a4a;
+    --gold:#c79a5b; --gold-bright:#e0bd84; --gold-faint:#a8854e;
+    --cream:#f3ece2; --cream-mute:#cdbcae; --faint:#9a7e92;
+    --line:#6a3a5a; --line-soft:#5c2a4a;
+    --open:#cdb07a; --wait:#c79a5b; --hold:#9a6f8f; --rest:#8f9ab0;
+    --west:#8fb3d4; --west-bright:#b0cde8; --west-faint:#6a96ba;
+    --west-card:rgba(143,179,212,0.08);
+    --vedic-card:rgba(199,154,91,0.08);
+    --agree:rgba(205,192,165,0.11);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif;background:#1c0a17;color:var(--cream);-webkit-font-smoothing:antialiased;padding:20px;}
+
+  .rail{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;}
+  .caption{text-align:center;font-family:-apple-system,sans-serif;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-faint);margin-bottom:6px;}
+  .subcap{text-align:center;font-family:-apple-system,sans-serif;font-size:11px;color:var(--faint);margin-bottom:12px;}
+
+  .phone{
+    width:392px;max-width:100%;min-height:860px;position:relative;
+    background:radial-gradient(120% 80% at 50% 0%,var(--plum-rich) 0%,var(--plum) 38%,var(--plum-deep) 100%);
+    border:1px solid var(--line-soft);border-radius:34px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .stars{position:absolute;inset:0;pointer-events:none;opacity:.4;}
+  .star{position:absolute;background:var(--gold-bright);border-radius:50%;animation:tw 6s infinite ease-in-out;}
+  @keyframes tw{0%,100%{opacity:.1}50%{opacity:.55}}
+  .statusbar{display:flex;justify-content:space-between;padding:14px 24px 0;font-family:-apple-system,sans-serif;font-size:13px;color:var(--cream-mute);position:relative;z-index:2;}
+  .app{position:relative;z-index:2;padding:4px 24px 110px;}
+
+  .nav-top{display:flex;align-items:center;gap:14px;padding:16px 0 6px;}
+  .back{background:none;border:none;color:var(--gold-bright);font-size:24px;cursor:pointer;line-height:1;}
+  .nt{font-family:-apple-system,sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--faint);}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:10px 0 0;}
+  .sec{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--faint);margin:26px 0 13px;}
+
+  /* ask screen */
+  .ask-lead{font-size:26px;line-height:1.32;font-weight:500;margin-top:22px;}
+  .ask-lead em{color:var(--gold-bright);font-style:italic;}
+  .ask-sub{font-family:-apple-system,sans-serif;font-size:14px;color:var(--cream-mute);margin-top:11px;line-height:1.58;}
+  .qfield{width:100%;margin-top:20px;background:rgba(0,0,0,.18);border:1px solid var(--line);border-radius:14px;padding:17px;color:var(--cream);font-family:'Cormorant Garamond',Garamond,serif;font-size:19px;resize:none;}
+  .qfield:focus{outline:2px solid var(--gold);border-color:transparent;}
+  .qfield::placeholder{color:var(--faint);}
+  .chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px;}
+  .chip{font-family:-apple-system,sans-serif;font-size:13px;padding:8px 14px;border:1px solid var(--line);border-radius:28px;color:var(--cream-mute);cursor:pointer;background:none;}
+
+  /* systems toggle in ask */
+  .sys-row{display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding:14px 16px;background:rgba(0,0,0,.14);border:1px solid var(--line-soft);border-radius:13px;}
+  .sys-row .sr-label{font-family:-apple-system,sans-serif;font-size:13px;color:var(--cream);}
+  .sys-row .sr-sub{font-family:-apple-system,sans-serif;font-size:11px;color:var(--faint);margin-top:3px;}
+  .pill-pair{display:flex;background:rgba(0,0,0,.2);border-radius:8px;padding:3px;gap:3px;}
+  .pill{font-family:-apple-system,sans-serif;font-size:11px;font-weight:600;padding:6px 11px;border-radius:6px;border:none;cursor:pointer;letter-spacing:0.03em;}
+  .pill.v-on{background:var(--gold);color:var(--plum-deep);}
+  .pill.w-on{background:var(--west);color:#0d1e2b;}
+  .pill.both-on{background:linear-gradient(90deg,var(--gold-faint),var(--west-faint));color:var(--cream);}
+  .pill.off{background:none;color:var(--faint);}
+
+  .go{width:100%;margin-top:22px;background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--plum-deep);border:none;border-radius:14px;padding:17px;font-family:-apple-system,sans-serif;font-size:16px;font-weight:600;cursor:pointer;}
+  .disc{font-family:-apple-system,sans-serif;font-size:11px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.5;}
+
+  /* reading screen */
+  .ans-q{font-size:22px;line-height:1.42;font-style:italic;color:var(--gold-bright);margin-top:20px;}
+  .verdict{margin-top:18px;border-radius:17px;padding:20px;background:linear-gradient(155deg,rgba(255,255,255,.05),rgba(0,0,0,.12));border:1px solid var(--line);position:relative;overflow:hidden;}
+  .verdict::before{content:'';position:absolute;top:-50px;right:-50px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(199,154,91,.18),transparent 70%);}
+  .vlabel{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  .vstate{display:flex;align-items:center;gap:12px;margin:13px 0 8px;}
+  .vdot{width:12px;height:12px;border-radius:50%;box-shadow:0 0 12px currentColor;}
+  .vstate b{font-size:25px;font-weight:600;}
+  .vbody{font-family:-apple-system,sans-serif;font-size:14px;line-height:1.68;color:var(--cream);}
+
+  /* source attribution tabs under verdict */
+  .why{margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft);}
+  .why-label{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:13px;}
+  .reason{display:flex;gap:11px;margin-bottom:12px;align-items:flex-start;}
+  .reason:last-child{margin-bottom:0;}
+  .r-sym{font-size:17px;min-width:22px;text-align:center;}
+  .r-body{font-family:-apple-system,sans-serif;font-size:13px;color:var(--cream-mute);line-height:1.55;flex:1;}
+  .r-body b{color:var(--cream);}
+  .r-badge{font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;padding:2px 7px;border-radius:8px;white-space:nowrap;margin-top:4px;display:inline-block;}
+  .r-badge.v{background:rgba(199,154,91,.15);color:var(--gold-faint);}
+  .r-badge.w{background:rgba(143,179,212,.15);color:var(--west-faint);}
+  .r-badge.both{background:var(--agree);color:var(--cream-mute);}
+
+  .best{margin-top:16px;background:rgba(205,176,122,.1);border:1px solid rgba(205,176,122,.3);border-radius:13px;padding:17px;}
+  .best .bl{font-family:-apple-system,sans-serif;font-size:10px;color:var(--open);letter-spacing:0.12em;text-transform:uppercase;}
+  .best .bd{font-size:21px;margin-top:6px;color:var(--gold-bright);}
+  .best .bdd{font-family:-apple-system,sans-serif;font-size:12.5px;color:var(--cream-mute);margin-top:4px;line-height:1.45;}
+
+  /* amplified — when both agree */
+  .amplified{margin-top:14px;background:var(--agree);border:1px solid rgba(205,192,165,.2);border-radius:13px;padding:16px;display:flex;gap:12px;align-items:flex-start;}
+  .amp-icon{font-size:16px;flex-shrink:0;margin-top:2px;color:var(--cream-mute);}
+  .amp-text{font-family:-apple-system,sans-serif;font-size:13px;color:var(--cream);line-height:1.55;}
+  .amp-text b{font-weight:600;}
+
+  .reflect-sm{text-align:center;margin:22px auto 0;max-width:32ch;font-size:18px;font-style:italic;line-height:1.5;color:var(--cream);opacity:.88;}
+  .reflect-sm .qm{color:var(--gold-faint);}
+  .save{width:100%;margin-top:18px;background:none;border:1px solid var(--gold);color:var(--gold-bright);border-radius:13px;padding:14px;font-family:-apple-system,sans-serif;font-size:14px;cursor:pointer;}
+  .disc-sm{font-family:-apple-system,sans-serif;font-size:10.5px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.5;}
+
+  /* casting */
+  .cast{text-align:center;padding:80px 0;}
+  .orbit{width:110px;height:110px;margin:0 auto 24px;position:relative;}
+  .orbit .ring{position:absolute;border:1px solid var(--line);border-radius:50%;}
+  .orbit .r1{inset:0;border-top-color:var(--gold);animation:spin 2.4s linear infinite;}
+  .orbit .r2{inset:18px;border-top-color:var(--west-bright);animation:spin 1.7s linear infinite reverse;}
+  .orbit .r3{inset:36px;border-top-color:var(--gold-faint);animation:spin 1.1s linear infinite;}
+  .orbit .core{position:absolute;inset:46px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--gold-bright),var(--gold));box-shadow:0 0 24px rgba(199,154,91,.5);}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .cast .ct{font-family:-apple-system,sans-serif;font-size:14px;color:var(--cream-mute);min-height:22px;letter-spacing:0.04em;}
+  .cast .cs{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;margin-top:8px;}
+  .cast .cs.v{color:var(--gold-faint);}
+  .cast .cs.w{color:var(--west-faint);}
+
+  .navbar{position:absolute;bottom:0;left:0;right:0;z-index:3;display:flex;justify-content:space-around;
+    padding:14px 0 24px;background:linear-gradient(transparent,var(--plum-deep) 45%);}
+  .navbar button{background:none;border:none;color:var(--faint);font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.08em;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-transform:uppercase;}
+  .navbar button.on{color:var(--gold-bright);}
+  .navbar .ic{width:20px;height:20px;border:1.5px solid currentColor;}
+  .navbar .ic.circle{border-radius:50%;}
+  .navbar .ic.diamond{transform:rotate(45deg);width:16px;height:16px;}
+  .navbar .ic.star{border:none;font-size:18px;line-height:20px;}
+</style>
+</head>
+<body>
+<div class="rail">
+
+<!-- ======== 1. ASK — with system selector ======== -->
+<div>
+  <div class="caption">Ask your ceist</div>
+  <div class="subcap">New: system toggle — Vedic, Western, or Both</div>
+  <div class="phone">
+    <div class="stars" id="s1"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+    <div class="app">
+      <div class="nav-top"><button class="back">‹</button><span class="nt">Ask your ceist</span></div>
+      <div class="rule"></div>
+
+      <div class="ask-lead">What are you <em>deciding</em>?</div>
+      <div class="ask-sub">Name it plainly. Ceist reads your chart and the sky right now — and tells you when, not what.</div>
+
+      <textarea class="qfield" rows="3" placeholder="e.g. Should I take the new role, or wait?">Should I hand in my notice now, or wait until after the bonus?</textarea>
+
+      <div class="chips">
+        <button class="chip">Start something</button>
+        <button class="chip">A hard conversation</button>
+        <button class="chip">A money move</button>
+        <button class="chip">Travel or move</button>
+      </div>
+
+      <!-- NEW: system selector -->
+      <div class="sys-row">
+        <div>
+          <div class="sr-label">Read with</div>
+          <div class="sr-sub">Which sky should answer?</div>
+        </div>
+        <div class="pill-pair">
+          <button class="pill v-on">Vedic</button>
+          <button class="pill off">Western</button>
+          <button class="pill off">Both</button>
+        </div>
+      </div>
+
+      <button class="go">Read my timing</button>
+      <div class="disc">Ceist offers reflective guidance from your chart. It isn't a substitute for professional, financial, or medical advice — the decision is always yours.</div>
+    </div>
+    <div class="navbar">
+      <button><span class="ic circle"></span>Today</button>
+      <button class="on"><span class="ic diamond"></span>Ask</button>
+      <button><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 2. CASTING — dual-system ======== -->
+<div>
+  <div class="caption">Casting — Both systems</div>
+  <div class="subcap">Reading Vedic + Western in parallel</div>
+  <div class="phone">
+    <div class="stars" id="s2"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+    <div class="app">
+      <div class="cast">
+        <!-- Outer ring gold (Vedic), inner ring blue (Western) -->
+        <div class="orbit">
+          <div class="ring r1"></div>
+          <div class="ring r2" style="border-top-color:var(--west-bright)"></div>
+          <div class="ring r3"></div>
+          <div class="core"></div>
+        </div>
+        <div class="ct" id="castStep">Placing your Vedic chart…</div>
+        <div class="cs v" id="castSys">Lahiri · sidereal</div>
+      </div>
+    </div>
+    <div class="navbar">
+      <button><span class="ic circle"></span>Today</button>
+      <button class="on"><span class="ic diamond"></span>Ask</button>
+      <button><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 3. READING — both systems, amplified agreement ======== -->
+<div>
+  <div class="caption">Your reading — Both skies</div>
+  <div class="subcap">When Vedic + Western agree, the signal is louder</div>
+  <div class="phone">
+    <div class="stars" id="s3"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+    <div class="app">
+      <div class="nav-top"><button class="back">‹</button><span class="nt">Your reading</span></div>
+      <div class="rule"></div>
+
+      <div class="ans-q">"Should I hand in my notice now, or wait until after the bonus?"</div>
+
+      <div class="verdict">
+        <div class="vlabel">Both skies answer</div>
+        <div class="vstate"><div class="vdot" style="color:var(--wait)"></div><b>Wait — not for long</b></div>
+        <div class="vbody">Your Vedic and Western charts are unusually aligned on this question. Both systems point toward a short wait and then a clean window in early July. The restraint you feel isn't hesitation — it's timing intelligence.</div>
+
+        <div class="why">
+          <div class="why-label">Why</div>
+
+          <div class="reason">
+            <span class="r-sym" style="color:var(--gold-bright)">♄</span>
+            <div class="r-body">
+              <b>Saturn in your Lagna (Vedic)</b> — favours finishing the chapter on your own terms. Leaving before the structure closes tends to cost more than it gives.
+              <br><span class="r-badge v">Vedic · Jyotish</span>
+            </div>
+          </div>
+
+          <div class="reason">
+            <span class="r-sym" style="color:var(--west-bright)">♄</span>
+            <div class="r-body">
+              <b>Saturn Rx in Pisces (Western)</b> — transiting your H2 of income and voice. Retrograde Saturn asks you to review what you're leaving, not just when. Decisions made now may need renegotiating.
+              <br><span class="r-badge w">Western · Tropical</span>
+            </div>
+          </div>
+
+          <div class="reason">
+            <span class="r-sym" style="color:var(--gold-bright)">♃</span>
+            <div class="r-body">
+              <b>Jupiter turns favourable, 2–11 July (Vedic)</b> — a brief, clean window where a considered move lands well.
+              <br><span class="r-badge v">Vedic · Jyotish</span>
+            </div>
+          </div>
+
+          <div class="reason">
+            <span class="r-sym" style="color:var(--west-bright)">♃</span>
+            <div class="r-body">
+              <b>Jupiter enters Gemini direct (Western)</b> — station direct in Gemini lights up your H5 of creative momentum. Early July brings a surge of expansive energy exactly matching the Vedic window.
+              <br><span class="r-badge w">Western · Tropical</span>
+            </div>
+          </div>
+
+          <div class="reason">
+            <span class="r-sym" style="color:var(--gold-bright)">☿</span>
+            <div class="r-body">
+              <b>Mercury retrograde from 23 July (both)</b> — in both systems, Mercury retrograde blurs contracts and correspondence. Avoid signing after that date.
+              <br><span class="r-badge both">Both traditions agree</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AMPLIFICATION PANEL — only appears when both agree -->
+      <div class="amplified">
+        <span class="amp-icon">○</span>
+        <span class="amp-text"><b>Signal amplified.</b> When Vedic and Western charts both point the same direction, the confidence in the timing is higher. Both skies are unusually aligned here — this is a genuine window, not an artefact of one system.</span>
+      </div>
+
+      <div class="best">
+        <div class="bl">✦ Your clearest window</div>
+        <div class="bd">2–11 July</div>
+        <div class="bdd">Confirmed by both Vedic Jupiter transit and Western Jupiter station direct. Both open at the same moment — rare alignment. Decide before 23 July (Mercury Rx applies in both systems).</div>
+      </div>
+
+      <div class="reflect-sm"><span class="qm">"</span>Two rivers reading the same stone. Both say: not yet. Then both say: now.<span class="qm">"</span></div>
+
+      <button class="save">Save this window · remind me 2 July ✓</button>
+      <div class="disc-sm">Reflective guidance only — the decision is always yours. Not financial or legal advice.</div>
+    </div>
+    <div class="navbar">
+      <button><span class="ic circle"></span>Today</button>
+      <button class="on"><span class="ic diamond"></span>Ask</button>
+      <button><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  ['s1','s2','s3'].forEach(id=>{
+    const el=document.getElementById(id);
+    for(let i=0;i<30;i++){
+      const s=document.createElement('div');s.className='star';
+      const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';
+      s.style.left=Math.random()*100+'%';s.style.top=Math.random()*60+'%';
+      s.style.animationDelay=(Math.random()*6)+'s';el.appendChild(s);
+    }
+  });
+
+  /* casting animation — alternates between Vedic and Western steps */
+  const steps=[
+    ['Placing your Vedic chart…','Lahiri · sidereal','v'],
+    ['Reading today\'s transits…','Dasha: Jupiter / Ketu','v'],
+    ['Casting your Western chart…','Tropical · Placidus','w'],
+    ['Scanning Western aspects…','Jupiter station · Saturn Rx','w'],
+    ['Finding where both agree…','Amplifying the signal…','both'],
+    ['Writing your reading…','Both skies aligned','both'],
+  ];
+  let si=0;
+  const stepEl=document.getElementById('castStep');
+  const sysEl=document.getElementById('castSys');
+  if(stepEl){
+    setInterval(()=>{
+      si=(si+1)%steps.length;
+      const [t,s,sys]=steps[si];
+      stepEl.textContent=t;
+      sysEl.textContent=s;
+      sysEl.className='cs '+(sys==='both'?'v':sys);
+    },700);
+  }
+</script>
+</body>
+</html>
