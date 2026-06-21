@@ -235,7 +235,17 @@
     dotsWrap.style.visibility = idx<0 ? 'hidden':'visible';
     [...dotsWrap.children].forEach((d,i)=>d.classList.toggle('on', i<=idx));
   }
+  function saveBirthData(){
+    const dob=document.getElementById('dob')?.value;
+    const tob=document.getElementById('tob')?.value;
+    const place=document.querySelector('.step[data-step="2"] input[type="text"]')?.value;
+    if(dob) localStorage.setItem('ceist_dob',dob);
+    if(tob) localStorage.setItem('ceist_tob',tob);
+    if(place) localStorage.setItem('ceist_place',place);
+  }
   function go(step){
+    const cur=parseInt(document.querySelector('.step.active')?.dataset.step||0);
+    if(cur===2) saveBirthData();
     document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
     document.querySelector(`.step[data-step="${step}"]`).classList.add('active');
     setDots(step);
