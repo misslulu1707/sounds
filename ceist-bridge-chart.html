@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — Two Maps, One Territory</title>
+<style>
+  :root {
+    --plum:#4a1f3d; --plum-deep:#3a1730; --plum-rich:#5c2a4a;
+    --gold:#c79a5b; --gold-bright:#e0bd84; --gold-faint:#a8854e;
+    --cream:#f3ece2; --cream-mute:#cdbcae; --faint:#9a7e92;
+    --line:#6a3a5a; --line-soft:#5c2a4a;
+    --open:#cdb07a; --wait:#c79a5b; --hold:#9a6f8f;
+    /* Western accent — cool silver-blue, distinct from warm Vedic gold */
+    --west:#8fb3d4; --west-bright:#b0cde8; --west-faint:#6a96ba;
+    --west-card:rgba(143,179,212,0.08);
+    --vedic-card:rgba(199,154,91,0.08);
+    --both:rgba(243,236,226,0.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif;background:#1c0a17;color:var(--cream);-webkit-font-smoothing:antialiased;padding:20px;}
+
+  .rail{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;}
+  .caption{text-align:center;font-family:-apple-system,sans-serif;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-faint);margin-bottom:6px;}
+  .subcap{text-align:center;font-family:-apple-system,sans-serif;font-size:11px;color:var(--faint);margin-bottom:12px;}
+
+  .phone{
+    width:392px;max-width:100%;min-height:860px;position:relative;
+    background:radial-gradient(120% 80% at 50% 0%, var(--plum-rich) 0%, var(--plum) 38%, var(--plum-deep) 100%);
+    border:1px solid var(--line-soft);border-radius:34px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .stars{position:absolute;inset:0;pointer-events:none;opacity:.4;}
+  .star{position:absolute;background:var(--gold-bright);border-radius:50%;animation:tw 6s infinite ease-in-out;}
+  @keyframes tw{0%,100%{opacity:.1}50%{opacity:.55}}
+  .statusbar{display:flex;justify-content:space-between;padding:14px 24px 0;font-family:-apple-system,sans-serif;font-size:13px;color:var(--cream-mute);position:relative;z-index:2;}
+  .app{position:relative;z-index:2;padding:4px 24px 110px;}
+
+  .nav-top{display:flex;align-items:center;gap:14px;padding:16px 0 6px;}
+  .back{background:none;border:none;color:var(--gold-bright);font-size:24px;cursor:pointer;line-height:1;}
+  .nav-top .title{font-family:-apple-system,sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--faint);}
+  .rule{height:1px;background:linear-gradient(90deg, transparent, var(--line), transparent);margin:10px 0 0;}
+  .sec{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--faint);margin:26px 0 13px;}
+
+  /* toggle */
+  .sys-toggle{display:flex;margin:18px 0 0;background:rgba(0,0,0,0.24);border-radius:13px;padding:4px;gap:4px;}
+  .sys-btn{flex:1;border:none;border-radius:10px;padding:11px 8px;font-family:-apple-system,sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:0.01em;}
+  .sys-btn.vedic-on{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--plum-deep);}
+  .sys-btn.west-on{background:linear-gradient(135deg,var(--west-bright),var(--west));color:#0d1e2b;}
+  .sys-btn.off{background:none;color:var(--faint);}
+  .sys-label{font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-top:7px;text-align:right;}
+  .sys-label.v{color:var(--gold-faint);}
+  .sys-label.w{color:var(--west-faint);}
+
+  /* chart head */
+  .chart-head{text-align:center;padding:16px 0 2px;}
+  .chart-head .who{font-size:22px;font-weight:500;}
+  .chart-head .where{font-family:-apple-system,sans-serif;font-size:12px;color:var(--cream-mute);margin-top:5px;}
+  .sys-badge{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:5px 13px;border-radius:20px;font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.07em;}
+  .sys-badge.v{background:rgba(199,154,91,.15);border:1px solid rgba(199,154,91,.3);color:var(--gold-bright);}
+  .sys-badge.w{background:rgba(143,179,212,.15);border:1px solid rgba(143,179,212,.3);color:var(--west-bright);}
+  .sys-badge .dot{width:6px;height:6px;border-radius:50%;}
+  .sys-badge.v .dot{background:var(--gold-bright);}
+  .sys-badge.w .dot{background:var(--west-bright);}
+
+  /* big three */
+  .bigthree{display:flex;gap:10px;margin-top:18px;}
+  .b3{flex:1;border-radius:14px;padding:14px 10px;text-align:center;}
+  .b3.v{background:var(--vedic-card);border:1px solid rgba(199,154,91,.22);}
+  .b3.w{background:var(--west-card);border:1px solid rgba(143,179,212,.22);}
+  .b3 .bl{font-family:-apple-system,sans-serif;font-size:9.5px;letter-spacing:0.12em;text-transform:uppercase;}
+  .b3.v .bl{color:var(--gold-faint);}
+  .b3.w .bl{color:var(--west-faint);}
+  .b3 .bg{font-size:22px;margin-top:7px;}
+  .b3.v .bg{color:var(--gold-bright);}
+  .b3.w .bg{color:var(--west-bright);}
+  .b3 .bn{font-family:-apple-system,sans-serif;font-size:10.5px;color:var(--cream-mute);margin-top:4px;}
+  .b3 .bsub{font-family:-apple-system,sans-serif;font-size:9.5px;color:var(--faint);margin-top:2px;}
+
+  /* dasha */
+  .dasha{margin-top:14px;background:linear-gradient(155deg,rgba(199,154,91,.1),rgba(0,0,0,.1));border:1px solid rgba(199,154,91,.28);border-radius:14px;padding:17px;}
+  .dasha .dl{font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold-faint);}
+  .dasha .dmain{font-size:20px;margin-top:7px;}
+  .dasha .dmain em{color:var(--gold-bright);font-style:italic;}
+  .dasha .dbar{height:5px;background:rgba(0,0,0,.25);border-radius:3px;margin-top:11px;overflow:hidden;}
+  .dasha .dbar i{display:block;height:100%;width:62%;background:linear-gradient(90deg,var(--gold),var(--gold-bright));}
+  .dasha .dspan{font-family:-apple-system,sans-serif;font-size:11px;color:var(--cream-mute);margin-top:7px;display:flex;justify-content:space-between;}
+
+  /* dignity (western) */
+  .dignity{margin-top:14px;background:var(--west-card);border:1px solid rgba(143,179,212,.22);border-radius:14px;padding:16px;}
+  .dignity .dil{font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--west-faint);}
+  .di-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(143,179,212,.1);font-family:-apple-system,sans-serif;font-size:12.5px;}
+  .di-row:last-child{border-bottom:none;}
+  .di-row .dp{color:var(--cream-mute);}
+  .di-row .dv{color:var(--west-bright);}
+  .di-row .dv.strong{color:var(--cream);font-weight:600;}
+
+  /* placements */
+  .placements{margin-top:6px;}
+  .pl-row{display:flex;align-items:center;gap:14px;padding:11px 2px;border-bottom:1px solid var(--line-soft);}
+  .pl-row:last-child{border-bottom:none;}
+  .pl-sym{font-size:17px;min-width:22px;text-align:center;}
+  .v .pl-sym{color:var(--gold-bright);}
+  .w .pl-sym{color:var(--west-bright);}
+  .pl-body{flex:1;}
+  .pl-body .pb1{font-size:15px;}
+  .pl-body .pb1 b{color:var(--cream);}
+  .pl-body .pb2{font-family:-apple-system,sans-serif;font-size:10.5px;color:var(--faint);margin-top:2px;}
+  .pl-house{font-family:-apple-system,sans-serif;font-size:10.5px;border-radius:18px;padding:3px 9px;white-space:nowrap;}
+  .v .pl-house{background:rgba(199,154,91,.12);border:1px solid rgba(199,154,91,.22);color:var(--gold-faint);}
+  .w .pl-house{background:rgba(143,179,212,.12);border:1px solid rgba(143,179,212,.22);color:var(--west-bright);}
+
+  /* bridge screen */
+  .bridge-hero{padding:22px 0 4px;}
+  .bh-line{font-size:30px;line-height:1.22;font-weight:500;}
+  .bh-line em{color:var(--gold-bright);font-style:italic;}
+  .bh-sub{font-family:-apple-system,sans-serif;font-size:14px;color:var(--cream-mute);margin-top:12px;line-height:1.62;}
+
+  .compare{margin-top:4px;}
+  .compare-label{font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--faint);margin:22px 0 10px;}
+  .crow{display:flex;margin-bottom:12px;border-radius:13px;overflow:hidden;border:1px solid var(--line-soft);}
+  .cside{flex:1;padding:13px 12px;}
+  .cside.v{background:var(--vedic-card);border-right:1px solid var(--line-soft);}
+  .cside.w{background:var(--west-card);}
+  .cs-sys{font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;margin-bottom:5px;}
+  .cside.v .cs-sys{color:var(--gold-faint);}
+  .cside.w .cs-sys{color:var(--west-faint);}
+  .cs-planet{font-family:-apple-system,sans-serif;font-size:10px;color:var(--faint);margin-bottom:3px;}
+  .cs-val{font-size:17px;line-height:1.2;}
+  .cside.v .cs-val{color:var(--gold-bright);}
+  .cside.w .cs-val{color:var(--west-bright);}
+  .cs-sub{font-family:-apple-system,sans-serif;font-size:10.5px;color:var(--faint);margin-top:4px;line-height:1.4;}
+
+  .converge{margin-top:18px;background:var(--both);border:1px solid rgba(243,236,226,.16);border-radius:14px;padding:17px;}
+  .conv-label{font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--cream-mute);margin-bottom:12px;}
+  .ci{display:flex;gap:10px;margin-bottom:10px;}
+  .ci:last-child{margin-bottom:0;}
+  .ck{width:6px;height:6px;border-radius:50%;background:var(--cream);flex-shrink:0;margin-top:6px;opacity:.45;}
+  .ct{font-family:-apple-system,sans-serif;font-size:12.5px;color:var(--cream);line-height:1.58;}
+  .ct b{font-weight:600;}
+
+  .reflect-sm{text-align:center;margin:26px auto 0;max-width:32ch;font-size:18px;font-style:italic;line-height:1.5;color:var(--cream);opacity:.88;}
+  .reflect-sm .qm{color:var(--gold-faint);}
+
+  .chart-note{font-family:-apple-system,sans-serif;font-size:10.5px;color:var(--faint);text-align:center;margin-top:16px;line-height:1.5;}
+
+  .navbar{position:absolute;bottom:0;left:0;right:0;z-index:3;display:flex;justify-content:space-around;
+    padding:14px 0 24px;background:linear-gradient(transparent, var(--plum-deep) 45%);}
+  .navbar button{background:none;border:none;color:var(--faint);font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.08em;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-transform:uppercase;}
+  .navbar button.on{color:var(--gold-bright);}
+  .navbar .ic{width:20px;height:20px;border:1.5px solid currentColor;}
+  .navbar .ic.circle{border-radius:50%;}
+  .navbar .ic.diamond{transform:rotate(45deg);width:16px;height:16px;}
+  .navbar .ic.star{border:none;font-size:18px;line-height:20px;}
+</style>
+</head>
+<body>
+<div class="rail">
+
+<!-- ======== 1. VEDIC CHART (corrected houses) ======== -->
+<div>
+  <div class="caption">Your Chart — Vedic</div>
+  <div class="subcap">Sidereal · Lahiri · Whole Sign</div>
+  <div class="phone">
+    <div class="stars" id="s1"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+    <div class="app">
+      <div class="nav-top"><button class="back">‹</button><span class="title">Your chart</span></div>
+      <div class="rule"></div>
+
+      <div class="sys-toggle">
+        <button class="sys-btn vedic-on">Vedic · Sidereal</button>
+        <button class="sys-btn off">Western · Tropical</button>
+      </div>
+      <div class="sys-label v">Lahiri ayanamsa · Whole Sign houses</div>
+
+      <div class="chart-head">
+        <div class="who">14 March 1989 · 04:20</div>
+        <div class="where">Dungannon, Northern Ireland</div>
+        <div class="sys-badge v"><span class="dot"></span>Jyotish · Sidereal</div>
+      </div>
+
+      <div class="bigthree">
+        <div class="b3 v"><div class="bl">Lagna</div><div class="bg">♐</div><div class="bn">Sagittarius</div><div class="bsub">Dhanu</div></div>
+        <div class="b3 v"><div class="bl">Moon · Rashi</div><div class="bg">♉</div><div class="bn">Taurus · Rohini</div><div class="bsub">Exalted</div></div>
+        <div class="b3 v"><div class="bl">Sun · Ravi</div><div class="bg">♒</div><div class="bn">Aquarius</div><div class="bsub">Purva Bhadrapada</div></div>
+      </div>
+
+      <div class="dasha">
+        <div class="dl">Ruling period · Vimshottari Mahadasha</div>
+        <div class="dmain">In <em>Jupiter</em>, within <em>Ketu</em></div>
+        <div class="dbar"><i></i></div>
+        <div class="dspan"><span>Jupiter began Mar 2014</span><span>ends Mar 2030</span></div>
+      </div>
+
+      <div class="sec">Grahas</div>
+      <div class="placements v">
+        <div class="pl-row"><span class="pl-sym">☉</span><div class="pl-body"><div class="pb1"><b>Sun</b> in Aquarius</div><div class="pb2">Purva Bhadrapada · the seeker's fire</div></div><span class="pl-house">H3</span></div>
+        <div class="pl-row"><span class="pl-sym">☾</span><div class="pl-body"><div class="pb1"><b>Moon</b> in Taurus</div><div class="pb2">Rohini · rooted, nourishing · uccha (exalted)</div></div><span class="pl-house">H6</span></div>
+        <div class="pl-row"><span class="pl-sym">☿</span><div class="pl-body"><div class="pb1"><b>Mercury</b> in Aquarius</div><div class="pb2">Shatabhisha · the quiet analyst</div></div><span class="pl-house">H3</span></div>
+        <div class="pl-row"><span class="pl-sym">♀</span><div class="pl-body"><div class="pb1"><b>Venus</b> in Aquarius</div><div class="pb2">Purva Bhadrapada</div></div><span class="pl-house">H3</span></div>
+        <div class="pl-row"><span class="pl-sym">♂</span><div class="pl-body"><div class="pb1"><b>Mars</b> in Taurus</div><div class="pb2">Krittika · steady, incisive drive</div></div><span class="pl-house">H6</span></div>
+        <div class="pl-row"><span class="pl-sym">♃</span><div class="pl-body"><div class="pb1"><b>Jupiter</b> in Taurus</div><div class="pb2">Rohini · your mahadasha lord</div></div><span class="pl-house">H6</span></div>
+        <div class="pl-row"><span class="pl-sym">♄</span><div class="pl-body"><div class="pb1"><b>Saturn</b> in Sagittarius</div><div class="pb2">Purva Ashadha · Saturn in Lagna</div></div><span class="pl-house">H1</span></div>
+        <div class="pl-row"><span class="pl-sym">☊</span><div class="pl-body"><div class="pb1"><b>Rahu</b> in Pisces</div><div class="pb2">Uttara Bhadrapada · desire's arrow</div></div><span class="pl-house">H4</span></div>
+        <div class="pl-row"><span class="pl-sym">☋</span><div class="pl-body"><div class="pb1"><b>Ketu</b> in Virgo</div><div class="pb2">Hasta · the unmooring, liberation</div></div><span class="pl-house">H10</span></div>
+      </div>
+      <div class="chart-note">Swiss Ephemeris · Lahiri ayanamsa · Whole Sign<br>Tap any graha to read what it carries</div>
+    </div>
+    <div class="navbar">
+      <button><span class="ic circle"></span>Today</button>
+      <button><span class="ic diamond"></span>Ask</button>
+      <button class="on"><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 2. WESTERN CHART ======== -->
+<div>
+  <div class="caption">Your Chart — Western</div>
+  <div class="subcap">Tropical · Placidus houses</div>
+  <div class="phone">
+    <div class="stars" id="s2"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+    <div class="app">
+      <div class="nav-top"><button class="back">‹</button><span class="title">Your chart</span></div>
+      <div class="rule"></div>
+
+      <div class="sys-toggle">
+        <button class="sys-btn off">Vedic · Sidereal</button>
+        <button class="sys-btn west-on">Western · Tropical</button>
+      </div>
+      <div class="sys-label w">Tropical zodiac · Placidus houses</div>
+
+      <div class="chart-head">
+        <div class="who">14 March 1989 · 04:20</div>
+        <div class="where">Dungannon, Northern Ireland</div>
+        <div class="sys-badge w"><span class="dot"></span>Western · Tropical</div>
+      </div>
+
+      <div class="bigthree">
+        <div class="b3 w"><div class="bl">Rising</div><div class="bg">♑</div><div class="bn">Capricorn</div><div class="bsub">Saturn-ruled</div></div>
+        <div class="b3 w"><div class="bl">Moon</div><div class="bg">♊</div><div class="bn">Gemini</div><div class="bsub">~9°</div></div>
+        <div class="b3 w"><div class="bl">Sun</div><div class="bg">♓</div><div class="bn">Pisces</div><div class="bsub">~23°</div></div>
+      </div>
+
+      <div class="dignity">
+        <div class="dil">Dignity &amp; outer planets</div>
+        <div class="di-row"><span class="dp">Saturn in Capricorn</span><span class="dv strong">Domicile · powerful</span></div>
+        <div class="di-row"><span class="dp">Saturn conjunct Uranus</span><span class="dv">~2° · structure vs. disruption</span></div>
+        <div class="di-row"><span class="dp">Neptune in Capricorn</span><span class="dv">spiritualising the material</span></div>
+        <div class="di-row"><span class="dp">Pluto in Scorpio</span><span class="dv">Domicile · depth, transformation</span></div>
+        <div class="di-row"><span class="dp">Mars conjunct Jupiter</span><span class="dv">~2° in Gemini · ideas ignite</span></div>
+      </div>
+
+      <div class="sec">Planets</div>
+      <div class="placements w">
+        <div class="pl-row"><span class="pl-sym">☉</span><div class="pl-body"><div class="pb1"><b>Sun</b> in Pisces</div><div class="pb2">23° · sensitive, porous, boundless</div></div><span class="pl-house">H2</span></div>
+        <div class="pl-row"><span class="pl-sym">☾</span><div class="pl-body"><div class="pb1"><b>Moon</b> in Gemini</div><div class="pb2">9° · curious, quick, dual-natured</div></div><span class="pl-house">H5</span></div>
+        <div class="pl-row"><span class="pl-sym">☿</span><div class="pl-body"><div class="pb1"><b>Mercury</b> in Aquarius</div><div class="pb2">26° · original systems thinking</div></div><span class="pl-house">H1</span></div>
+        <div class="pl-row"><span class="pl-sym">♀</span><div class="pl-body"><div class="pb1"><b>Venus</b> in Aries</div><div class="pb2">21° · direct, impulsive in love</div></div><span class="pl-house">H3</span></div>
+        <div class="pl-row"><span class="pl-sym">♂</span><div class="pl-body"><div class="pb1"><b>Mars</b> in Gemini</div><div class="pb2">6° · drives through words and ideas</div></div><span class="pl-house">H5</span></div>
+        <div class="pl-row"><span class="pl-sym">♃</span><div class="pl-body"><div class="pb1"><b>Jupiter</b> in Gemini</div><div class="pb2">4° · expands through learning, speech</div></div><span class="pl-house">H5</span></div>
+        <div class="pl-row"><span class="pl-sym">♄</span><div class="pl-body"><div class="pb1"><b>Saturn</b> in Capricorn</div><div class="pb2">2° · its own sign · the architect</div></div><span class="pl-house">H1</span></div>
+        <div class="pl-row"><span class="pl-sym">⛢</span><div class="pl-body"><div class="pb1"><b>Uranus</b> in Capricorn</div><div class="pb2">2° · disrupting structure from within</div></div><span class="pl-house">H1</span></div>
+        <div class="pl-row"><span class="pl-sym">♆</span><div class="pl-body"><div class="pb1"><b>Neptune</b> in Capricorn</div><div class="pb2">11° · dissolving the material world</div></div><span class="pl-house">H1</span></div>
+        <div class="pl-row"><span class="pl-sym">♇</span><div class="pl-body"><div class="pb1"><b>Pluto</b> in Scorpio</div><div class="pb2">13° · depth, power, transformation</div></div><span class="pl-house">H10</span></div>
+      </div>
+      <div class="chart-note">Tropical zodiac · Placidus houses · outer planets<br>Tap any planet for a reading</div>
+    </div>
+    <div class="navbar">
+      <button><span class="ic circle"></span>Today</button>
+      <button><span class="ic diamond"></span>Ask</button>
+      <button class="on"><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======== 3. BRIDGE — TWO MAPS, ONE TERRITORY ======== -->
+<div>
+  <div class="caption">Bridge — Both Skies</div>
+  <div class="subcap">Where Vedic and Western meet in your chart</div>
+  <div class="phone">
+    <div class="stars" id="s3"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+    <div class="app">
+      <div class="nav-top"><button class="back">‹</button><span class="title">Both skies · your chart</span></div>
+      <div class="rule"></div>
+
+      <div class="bridge-hero">
+        <div class="bh-line">Two maps.<br><em>One territory.</em></div>
+        <div class="bh-sub">Your Vedic chart shows how your karma moves. Your Western chart shows how your psyche moves. Where they agree on you — that is your unshakeable core. Where they diverge — that is your richness.</div>
+      </div>
+
+      <div class="compare-label" style="margin-top:24px">The key divergences · what shifts by ~24°</div>
+
+      <!-- MOON — the most dramatic shift -->
+      <div class="crow">
+        <div class="cside v">
+          <div class="cs-sys">Vedic Moon</div>
+          <div class="cs-val">Taurus<br>Rohini</div>
+          <div class="cs-sub">Exalted · earthy<br>rooted, nourishing, slow to move</div>
+        </div>
+        <div class="cside w">
+          <div class="cs-sys">Western Moon</div>
+          <div class="cs-val">Gemini</div>
+          <div class="cs-sub">Mercurial · airy<br>curious, quick, seeks the next thing</div>
+        </div>
+      </div>
+
+      <!-- SUN -->
+      <div class="crow">
+        <div class="cside v">
+          <div class="cs-sys">Vedic Sun</div>
+          <div class="cs-val">Aquarius<br>Purva Bhadrapada</div>
+          <div class="cs-sub">The rebel idealist<br>seeks truth beyond convention</div>
+        </div>
+        <div class="cside w">
+          <div class="cs-sys">Western Sun</div>
+          <div class="cs-val">Pisces</div>
+          <div class="cs-sub">The sensitive empath<br>porous, imaginative, boundless</div>
+        </div>
+      </div>
+
+      <!-- ASCENDANT -->
+      <div class="crow">
+        <div class="cside v">
+          <div class="cs-sys">Vedic Rising</div>
+          <div class="cs-val">Sagittarius</div>
+          <div class="cs-sub">The wandering philosopher<br>expansive, truth-seeking</div>
+        </div>
+        <div class="cside w">
+          <div class="cs-sys">Western Rising</div>
+          <div class="cs-val">Capricorn</div>
+          <div class="cs-sub">The structured builder<br>Saturn at the door from birth</div>
+        </div>
+      </div>
+
+      <!-- WHERE THEY AGREE -->
+      <div class="converge">
+        <div class="conv-label">✦ Where both charts speak together</div>
+        <div class="ci"><span class="ck"></span><span class="ct"><b>Saturn shapes you.</b> Vedic places Saturn in your Lagna (H1 in Sagittarius). Western places it in Capricorn — its own sign, powerful, in H1. Both say: you build slowly, earn through discipline, and your path is earned rather than given.</span></div>
+        <div class="ci"><span class="ck"></span><span class="ct"><b>Mercury in Aquarius — in both charts.</b> Your Mercury does not shift sign across systems. Original thinking, systems, categories: this is not a trait, it's a frequency.</span></div>
+        <div class="ci"><span class="ck"></span><span class="ct"><b>Ideas are your engine.</b> Western: Mars + Jupiter conjunct in Gemini H5. Vedic: Mars + Moon + Jupiter in Taurus H6. Both systems load Gemini-adjacent energy with your drive. You move through language and learning.</span></div>
+        <div class="ci"><span class="ck"></span><span class="ct"><b>Venus breaks free.</b> Vedic: Venus in Aquarius (unconventional love). Western: Venus in Aries (direct, impulsive love). Both say you don't love quietly or conventionally.</span></div>
+      </div>
+
+      <div class="reflect-sm"><span class="qm">"</span>Vedic astrology gives you your karma. Western gives you your psychology. Together, they give you yourself.<span class="qm">"</span></div>
+    </div>
+    <div class="navbar">
+      <button><span class="ic circle"></span>Today</button>
+      <button><span class="ic diamond"></span>Ask</button>
+      <button class="on"><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+  ['s1','s2','s3'].forEach(id=>{
+    const el=document.getElementById(id);
+    for(let i=0;i<30;i++){
+      const s=document.createElement('div');s.className='star';
+      const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';
+      s.style.left=Math.random()*100+'%';s.style.top=Math.random()*60+'%';
+      s.style.animationDelay=(Math.random()*6)+'s';el.appendChild(s);
+    }
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ceist — Both Skies Today</title>
+<style>
+  :root {
+    --plum:#4a1f3d; --plum-deep:#3a1730; --plum-rich:#5c2a4a;
+    --gold:#c79a5b; --gold-bright:#e0bd84; --gold-faint:#a8854e;
+    --cream:#f3ece2; --cream-mute:#cdbcae; --faint:#9a7e92;
+    --line:#6a3a5a; --line-soft:#5c2a4a;
+    --open:#cdb07a; --wait:#c79a5b; --hold:#9a6f8f; --rest:#8f9ab0;
+    --west:#8fb3d4; --west-bright:#b0cde8; --west-faint:#6a96ba;
+    --west-card:rgba(143,179,212,0.08);
+    --vedic-card:rgba(199,154,91,0.08);
+    --agree:rgba(205,192,165,0.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Cormorant Garamond','EB Garamond',Garamond,'Times New Roman',serif;background:#2a1022;color:var(--cream);-webkit-font-smoothing:antialiased;}
+
+  .rail{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;padding:20px;}
+  .caption{text-align:center;font-family:-apple-system,sans-serif;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold-faint);margin-bottom:6px;}
+  .subcap{text-align:center;font-family:-apple-system,sans-serif;font-size:11px;color:var(--faint);margin-bottom:12px;}
+
+  .phone{
+    max-width:412px;min-height:900px;position:relative;
+    background:radial-gradient(120% 80% at 50% 0%, var(--plum-rich) 0%, var(--plum) 38%, var(--plum-deep) 100%);
+    border:1px solid var(--line-soft);border-radius:34px;overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.55);
+  }
+  .stars{position:absolute;inset:0;pointer-events:none;opacity:.42;}
+  .star{position:absolute;background:var(--gold-bright);border-radius:50%;animation:tw 6s infinite ease-in-out;}
+  @keyframes tw{0%,100%{opacity:.1}50%{opacity:.55}}
+  .statusbar{display:flex;justify-content:space-between;padding:14px 24px 0;font-family:-apple-system,sans-serif;font-size:13px;color:var(--cream-mute);position:relative;z-index:2;}
+  .app{position:relative;z-index:2;padding:4px 24px 130px;}
+
+  .top{display:flex;align-items:center;justify-content:space-between;padding:18px 0 6px;}
+  .mark{font-size:21px;letter-spacing:0.2em;color:var(--gold);font-weight:600;text-indent:0.2em;}
+  .av{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.18);}
+
+  /* THE MOMENT — primary, unchanged from ceisthome */
+  .moment{text-align:center;padding:28px 0 6px;animation:breathe 1s ease;}
+  @keyframes breathe{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .moonwrap{width:110px;height:110px;margin:0 auto 22px;position:relative;display:grid;place-items:center;}
+  .halo{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(199,154,91,.26),transparent 68%);animation:pulse 5s ease-in-out infinite;}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.12);opacity:1}}
+  .moon{width:68px;height:68px;border-radius:50%;position:relative;overflow:hidden;
+    background:radial-gradient(circle at 34% 30%,var(--gold-bright),var(--gold) 58%,#7c5a2e 96%);
+    box-shadow:0 0 32px rgba(199,154,91,.42);}
+  .moon::after{content:'';position:absolute;inset:0;border-radius:50%;
+    background:linear-gradient(90deg,transparent 52%,rgba(58,23,48,0.62) 78%);}
+  .phase{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold-faint);}
+  .moon-line{font-size:23px;line-height:1.38;margin-top:12px;font-weight:500;max-width:24ch;margin-left:auto;margin-right:auto;}
+  .moon-line em{color:var(--gold-bright);font-style:italic;}
+  .verb{display:inline-flex;align-items:center;gap:9px;margin-top:20px;padding:8px 18px;border:1px solid var(--line);border-radius:28px;font-family:-apple-system,sans-serif;font-size:13.5px;letter-spacing:0.03em;color:var(--cream);}
+  .verb .vd{width:8px;height:8px;border-radius:50%;background:var(--wait);box-shadow:0 0 8px var(--wait);}
+
+  /* contemplative quote */
+  .reflect{text-align:center;margin:28px auto 0;max-width:30ch;}
+  .reflect .q{font-size:19px;line-height:1.5;font-style:italic;color:var(--cream);opacity:.9;}
+  .reflect .qm{color:var(--gold-faint);font-size:24px;line-height:0;vertical-align:-0.2em;}
+
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:30px 0 0;}
+
+  .sec{font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.18em;text-transform:uppercase;color:var(--faint);margin:26px 0 13px;}
+
+  /* open ceist (unchanged) */
+  .resume{background:rgba(0,0,0,.16);border:1px solid var(--line-soft);border-radius:15px;padding:17px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;}
+  .resume .rq{font-size:17px;line-height:1.35;}
+  .resume .rs{font-family:-apple-system,sans-serif;font-size:12px;color:var(--cream-mute);margin-top:5px;}
+  .resume .rs b{color:var(--gold-bright);}
+  .resume .chev{color:var(--gold-faint);font-size:22px;flex-shrink:0;}
+
+  /* ===== BOTH SKIES TODAY — the new module ===== */
+  .both-skies{margin-top:14px;border-radius:18px;overflow:hidden;border:1px solid var(--line-soft);}
+
+  .bs-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:rgba(0,0,0,.14);cursor:pointer;}
+  .bs-head-left{display:flex;align-items:center;gap:10px;}
+  .bs-symbol{font-size:18px;}
+  .bs-title{font-family:-apple-system,sans-serif;font-size:13.5px;font-weight:600;color:var(--cream);}
+  .bs-subtitle{font-family:-apple-system,sans-serif;font-size:11px;color:var(--faint);margin-top:2px;}
+  .bs-caret{font-family:-apple-system,sans-serif;font-size:16px;color:var(--faint);}
+
+  .bs-body{padding:4px 18px 18px;}
+
+  /* two columns — vedic left, western right */
+  .bs-dual{display:flex;gap:10px;margin-top:14px;}
+  .bs-col{flex:1;border-radius:12px;padding:13px 11px;}
+  .bs-col.v{background:var(--vedic-card);border:1px solid rgba(199,154,91,.2);}
+  .bs-col.w{background:var(--west-card);border:1px solid rgba(143,179,212,.2);}
+  .bs-col-label{font-family:-apple-system,sans-serif;font-size:9.5px;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:8px;}
+  .bs-col.v .bs-col-label{color:var(--gold-faint);}
+  .bs-col.w .bs-col-label{color:var(--west-faint);}
+  .bs-item{margin-bottom:9px;}
+  .bs-item:last-child{margin-bottom:0;}
+  .bs-key{font-family:-apple-system,sans-serif;font-size:10px;color:var(--faint);}
+  .bs-val{font-size:15px;line-height:1.25;margin-top:2px;}
+  .bs-col.v .bs-val{color:var(--gold-bright);}
+  .bs-col.w .bs-val{color:var(--west-bright);}
+  .bs-val-sub{font-family:-apple-system,sans-serif;font-size:10px;color:var(--faint);margin-top:1px;}
+
+  /* agreement pill */
+  .bs-agree{margin-top:13px;background:var(--agree);border:1px solid rgba(205,192,165,.22);border-radius:11px;padding:13px 14px;display:flex;gap:10px;align-items:flex-start;}
+  .bs-agree .ag-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+  .bs-agree .ag-text{font-family:-apple-system,sans-serif;font-size:12.5px;color:var(--cream);line-height:1.55;}
+  .bs-agree .ag-text b{font-weight:600;}
+
+  /* diverge note */
+  .bs-diverge{margin-top:10px;background:rgba(154,111,143,.08);border:1px solid rgba(154,111,143,.2);border-radius:11px;padding:13px 14px;display:flex;gap:10px;align-items:flex-start;}
+  .bs-diverge .dv-icon{font-size:14px;flex-shrink:0;margin-top:2px;color:var(--hold);}
+  .bs-diverge .dv-text{font-family:-apple-system,sans-serif;font-size:12px;color:var(--cream-mute);line-height:1.55;}
+  .bs-diverge .dv-text b{color:var(--cream);}
+
+  /* horizon (unchanged) */
+  .horizon{margin-top:12px;display:flex;align-items:center;gap:16px;padding:14px 2px;}
+  .hdate{text-align:center;min-width:44px;}
+  .hdate .d{font-size:24px;font-weight:600;line-height:1;color:var(--gold-bright);}
+  .hdate .m{font-family:-apple-system,sans-serif;font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:0.1em;margin-top:4px;}
+  .hbar .ht{font-size:17px;}
+  .hbar .hs{font-family:-apple-system,sans-serif;font-size:12px;color:var(--cream-mute);margin-top:3px;line-height:1.4;}
+
+  /* panchang */
+  .panchang{margin-top:14px;background:rgba(0,0,0,.12);border:1px solid var(--line-soft);border-radius:15px;overflow:hidden;}
+  .pc-head{width:100%;display:flex;align-items:center;justify-content:space-between;padding:15px 18px;background:none;border:none;color:var(--cream);cursor:pointer;font-family:-apple-system,sans-serif;}
+  .pc-head .pl{font-size:13px;letter-spacing:0.03em;}
+  .pc-head .pr{font-size:12px;color:var(--faint);display:flex;align-items:center;gap:7px;}
+  .pc-body{display:none;padding:2px 18px 16px;}
+  .pc-body.open{display:block;}
+  .pc-row{display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--line-soft);font-family:-apple-system,sans-serif;font-size:13px;}
+  .pc-row .k{color:var(--faint);}
+  .pc-row .v{color:var(--cream);}
+  .pc-row .v em{color:var(--gold-bright);font-style:normal;font-family:'Cormorant Garamond',serif;font-size:15px;}
+
+  /* FAB */
+  .ask-fab{position:absolute;bottom:96px;left:24px;right:24px;z-index:4;
+    background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:var(--plum-deep);
+    border:none;border-radius:15px;padding:17px;font-family:-apple-system,sans-serif;font-size:16px;font-weight:600;
+    cursor:pointer;box-shadow:0 12px 28px rgba(0,0,0,.38);display:flex;align-items:center;justify-content:center;gap:9px;}
+
+  .nav{position:absolute;bottom:0;left:0;right:0;z-index:3;display:flex;justify-content:space-around;
+    padding:14px 0 24px;background:linear-gradient(transparent,var(--plum-deep) 45%);}
+  .nav button{background:none;border:none;color:var(--faint);font-family:-apple-system,sans-serif;font-size:10px;letter-spacing:0.08em;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;text-transform:uppercase;}
+  .nav button.on{color:var(--gold-bright);}
+  .nav .ic{width:20px;height:20px;border:1.5px solid currentColor;}
+  .nav .ic.circle{border-radius:50%;}
+  .nav .ic.diamond{transform:rotate(45deg);width:16px;height:16px;}
+  .nav .ic.star{border:none;font-size:18px;line-height:20px;}
+</style>
+</head>
+<body>
+<div class="rail">
+
+<!-- ===== TODAY — with Both Skies module ===== -->
+<div>
+  <div class="caption">Today — updated home</div>
+  <div class="subcap">Both skies module · collapsed by default</div>
+  <div class="phone" style="width:412px">
+    <div class="stars" id="s1"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+
+    <div class="app">
+      <div class="top">
+        <div class="mark">CEIST</div>
+        <div class="av"></div>
+      </div>
+
+      <div class="moment">
+        <div class="moonwrap">
+          <div class="halo"></div>
+          <div class="moon"></div>
+        </div>
+        <div class="phase">Waxing · Shukla Paksha</div>
+        <div class="moon-line">The Moon moves through <em>Rohini</em>, your house of roots and belonging.</div>
+        <div class="verb"><span class="vd"></span> A day to tend, not to launch</div>
+      </div>
+
+      <div class="reflect">
+        <div class="q"><span class="qm">"</span>What is rooted is easy to nourish. Tend the ground today; the leaving can wait for its season.<span class="qm">"</span></div>
+      </div>
+
+      <div class="rule"></div>
+
+      <div class="sec">Your open ceist</div>
+      <div class="resume">
+        <div>
+          <div class="rq">Should I hand in my notice now, or wait?</div>
+          <div class="rs">Your clean window opens in <b>11 days</b> · 2 July</div>
+        </div>
+        <div class="chev">›</div>
+      </div>
+
+      <!-- ===== BOTH SKIES TODAY — new module ===== -->
+      <div class="sec">Both skies today</div>
+      <div class="both-skies">
+        <button class="bs-head" onclick="toggleBS(this)">
+          <div class="bs-head-left">
+            <span class="bs-symbol">✦</span>
+            <div>
+              <div class="bs-title">Both traditions agree today</div>
+              <div class="bs-subtitle">Vedic + Western · Summer Solstice</div>
+            </div>
+          </div>
+          <span class="bs-caret" id="bsCaret">+</span>
+        </button>
+
+        <div class="bs-body" id="bsBody" style="display:none">
+          <div class="bs-dual">
+            <div class="bs-col v">
+              <div class="bs-col-label">Vedic · Jyotish</div>
+              <div class="bs-item">
+                <div class="bs-key">Moon</div>
+                <div class="bs-val">Rohini</div>
+                <div class="bs-val-sub">Taurus · earthy, patient</div>
+              </div>
+              <div class="bs-item">
+                <div class="bs-key">Sun position</div>
+                <div class="bs-val">Mithuna<br><span style="font-size:13px">Gemini · sidereal</span></div>
+                <div class="bs-val-sub">Ideas, connections</div>
+              </div>
+              <div class="bs-item">
+                <div class="bs-key">Today's quality</div>
+                <div class="bs-val">Saubhagya</div>
+                <div class="bs-val-sub">Wellbeing · tend what grows</div>
+              </div>
+            </div>
+            <div class="bs-col w">
+              <div class="bs-col-label">Western · Tropical</div>
+              <div class="bs-item">
+                <div class="bs-key">Moon</div>
+                <div class="bs-val">Gemini</div>
+                <div class="bs-val-sub">~9° · communicative</div>
+              </div>
+              <div class="bs-item">
+                <div class="bs-key">Sun position</div>
+                <div class="bs-val">Cancer 0°<br><span style="font-size:13px">Solstice · tropical</span></div>
+                <div class="bs-val-sub">Peak of the year, then inward</div>
+              </div>
+              <div class="bs-item">
+                <div class="bs-key">Today's quality</div>
+                <div class="bs-val">Threshold</div>
+                <div class="bs-val-sub">The year turns · tend, don't force</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- WHERE THEY AGREE -->
+          <div class="bs-agree">
+            <span class="ag-icon">○</span>
+            <span class="ag-text"><b>Both traditions counsel the same thing today.</b> Vedic: Moon in Rohini asks for tending and patience. Western: the Solstice marks a hinge — the Sun has reached its height and now turns inward. Neither sky favours forcing a launch. Both say: finish what is already in motion.</span>
+          </div>
+
+          <!-- WHERE THEY DIVERGE -->
+          <div class="bs-diverge">
+            <span class="dv-icon">◇</span>
+            <span class="dv-text"><b>One difference.</b> Western marks today as the Solstice — a seasonal threshold with cultural and psychological weight. Vedic does not: the sidereal Sun moved into Gemini on ~14 June. For Jyotish, the solstice is a moment of Sayana (tropical) reckoning only. Neither is wrong. They're measuring different things.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- HORIZON (unchanged) -->
+      <div class="sec">On the horizon</div>
+      <div class="horizon">
+        <div class="hdate"><div class="d">2</div><div class="m">Jul</div></div>
+        <div class="hbar">
+          <div class="ht">A clean window opens</div>
+          <div class="hs">Jupiter turns favourable — the one clear slot this season for a considered move.</div>
+        </div>
+      </div>
+
+      <!-- PANCHANG (unchanged) -->
+      <div class="panchang">
+        <button class="pc-head" onclick="togglePanchang(this)">
+          <span class="pl">Today's panchang</span>
+          <span class="pr">the day's almanac <span id="pcaret">+</span></span>
+        </button>
+        <div class="pc-body" id="pcbody">
+          <div class="pc-row"><span class="k">Tithi</span><span class="v"><em>Shukla Saptami</em> · 7th lunar day</span></div>
+          <div class="pc-row"><span class="k">Nakshatra</span><span class="v"><em>Rohini</em> · until 21:40</span></div>
+          <div class="pc-row"><span class="k">Yoga</span><span class="v"><em>Saubhagya</em> · wellbeing</span></div>
+          <div class="pc-row"><span class="k">Moon sign</span><span class="v"><em>Vrishabha</em> · Taurus sidereal</span></div>
+          <div class="pc-row"><span class="k">Mahadasha</span><span class="v"><em>Jupiter</em> · within Ketu antardasha</span></div>
+          <div class="pc-row" style="background:rgba(143,179,212,.06);border-radius:6px;padding:10px 4px;"><span class="k" style="color:var(--west-faint)">Western note</span><span class="v" style="color:var(--west-bright)">Summer Solstice · Sun 0° Cancer</span></div>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="ask-fab">✦ Ask your ceist</button>
+
+    <div class="nav">
+      <button class="on"><span class="ic circle"></span>Today</button>
+      <button><span class="ic diamond"></span>Ask</button>
+      <button><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTH SKIES — expanded standalone ===== -->
+<div>
+  <div class="caption">Both Skies Today — expanded</div>
+  <div class="subcap">The divergences fully visible · Summer Solstice 21 June</div>
+  <div class="phone" style="width:412px">
+    <div class="stars" id="s2"></div>
+    <div class="statusbar"><span>17:15</span><span>✦</span></div>
+
+    <div class="app">
+      <div style="display:flex;align-items:center;gap:14px;padding:16px 0 6px;">
+        <button style="background:none;border:none;color:var(--gold-bright);font-size:24px;cursor:pointer;line-height:1;">‹</button>
+        <span style="font-family:-apple-system,sans-serif;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:var(--faint);">Both skies · today</span>
+      </div>
+      <div class="rule"></div>
+
+      <!-- THE DATE -->
+      <div style="text-align:center;padding:22px 0 8px;">
+        <div style="font-size:13px;font-family:-apple-system,sans-serif;letter-spacing:0.18em;text-transform:uppercase;color:var(--faint);">Sunday · 21 June · Summer Solstice</div>
+        <div style="font-size:28px;margin-top:10px;font-weight:500;line-height:1.25;">The sky <em style="color:var(--gold-bright);font-style:italic">turns</em> today.</div>
+        <div style="font-family:-apple-system,sans-serif;font-size:14px;color:var(--cream-mute);margin-top:10px;line-height:1.6;max-width:30ch;margin-left:auto;margin-right:auto;">Western astrology marks this as the Solstice threshold. Vedic holds it as a regular Rohini day. Both counsel the same: tend, don't force.</div>
+      </div>
+
+      <!-- DUAL VIEW -->
+      <div class="bs-dual" style="margin-top:18px;">
+        <div class="bs-col v">
+          <div class="bs-col-label">Vedic · Jyotish</div>
+          <div class="bs-item">
+            <div class="bs-key">Moon nakshatra</div>
+            <div class="bs-val">Rohini</div>
+            <div class="bs-val-sub">Steady, nourishing, fertile</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Moon sign</div>
+            <div class="bs-val">Vrishabha<br><span style="font-size:13px">Taurus sidereal</span></div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Sun sign</div>
+            <div class="bs-val">Mithuna<br><span style="font-size:13px">Gemini sidereal</span></div>
+            <div class="bs-val-sub">Since ~14 June</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Tithi</div>
+            <div class="bs-val">Shukla Saptami</div>
+            <div class="bs-val-sub">7th lunar day · waxing</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Yoga</div>
+            <div class="bs-val">Saubhagya</div>
+            <div class="bs-val-sub">Fortunate · wellbeing</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Your dasha</div>
+            <div class="bs-val">Jup / Ketu</div>
+            <div class="bs-val-sub">Release &amp; refine</div>
+          </div>
+        </div>
+        <div class="bs-col w">
+          <div class="bs-col-label">Western · Tropical</div>
+          <div class="bs-item">
+            <div class="bs-key">Moon sign</div>
+            <div class="bs-val">Gemini</div>
+            <div class="bs-val-sub">Quick, curious, communicative</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Moon natal</div>
+            <div class="bs-val">Your Moon<br><span style="font-size:13px">transiting natal Moon</span></div>
+            <div class="bs-val-sub">Lunar return energy</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Sun sign</div>
+            <div class="bs-val">Cancer 0°<br><span style="font-size:13px">Solstice ingress</span></div>
+            <div class="bs-val-sub">Peak of solar year</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Key transit</div>
+            <div class="bs-val">Saturn Rx</div>
+            <div class="bs-val-sub">Pisces · reviewing structures</div>
+          </div>
+          <div class="bs-item">
+            <div class="bs-key">Your natal</div>
+            <div class="bs-val">Saturn H1</div>
+            <div class="bs-val-sub">Capricorn domicile · in focus</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AGREEMENT BANNER -->
+      <div class="bs-agree" style="margin-top:16px;">
+        <span class="ag-icon">○</span>
+        <span class="ag-text"><b>Where both say the same thing:</b> Vedic Moon in Rohini and the Western Solstice both counsel tending over launching. Rohini favours slow consolidation; the Solstice is a hinge between expansion and inward turn. Today is not for forcing new beginnings.</span>
+      </div>
+
+      <!-- DIVERGENCE DETAIL -->
+      <div style="margin-top:12px;">
+        <div style="font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;">Where they read differently</div>
+
+        <div class="bs-diverge">
+          <span class="dv-icon">◇</span>
+          <span class="dv-text"><b>The Moon:</b> Vedic reads your Moon as Taurus (Rohini) — earthy, rooted, slow. Western reads it as Gemini — quick, idea-driven, restless. Both are true; they describe different layers of you. Your Vedic Moon is your karmic emotional pattern. Your Western Moon is your psychological emotional pattern.</span>
+        </div>
+
+        <div class="bs-diverge" style="margin-top:10px;">
+          <span class="dv-icon">◇</span>
+          <span class="dv-text"><b>Saturn retrograde in Western:</b> Saturn is currently retrograding through Pisces in the tropical system — affecting your H2 (finances, voice). Vedic doesn't read Saturn retrograde the same way: in Jyotish, retrograde (vakri) Saturn often becomes stronger and more exacting, not delayed. The Western reading softens; the Vedic intensifies.</span>
+        </div>
+
+        <div class="bs-diverge" style="margin-top:10px;">
+          <span class="dv-icon">◇</span>
+          <span class="dv-text"><b>The Solstice:</b> Western astrology gives the Solstice enormous seasonal weight — it's a cardinal ingress, a moment of maximum solar power. Vedic does not track it; the sidereal calendar operates independently of seasons. This is not a flaw in either system — they are literally measuring different cosmological clocks.</span>
+        </div>
+      </div>
+
+      <div class="reflect" style="margin-top:26px;">
+        <div class="q"><span class="qm">"</span>Two rivers, one sea. The maps differ; the territory is yours.<span class="qm">"</span></div>
+      </div>
+
+    </div>
+
+    <button class="ask-fab">✦ Ask how the skies read your decision</button>
+
+    <div class="nav">
+      <button class="on"><span class="ic circle"></span>Today</button>
+      <button><span class="ic diamond"></span>Ask</button>
+      <button><span class="ic star">✦</span>Chart</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  ['s1','s2'].forEach(id=>{
+    const el=document.getElementById(id);
+    for(let i=0;i<36;i++){
+      const s=document.createElement('div');s.className='star';
+      const z=Math.random()*2+1;s.style.width=z+'px';s.style.height=z+'px';
+      s.style.left=Math.random()*100+'%';s.style.top=Math.random()*55+'%';
+      s.style.animationDelay=(Math.random()*6)+'s';el.appendChild(s);
+    }
+  });
+  function toggleBS(btn){
+    const body=document.getElementById('bsBody');
+    const caret=document.getElementById('bsCaret');
+    const open=body.style.display==='none';
+    body.style.display=open?'block':'none';
+    caret.textContent=open?'−':'+';
+  }
+  function togglePanchang(btn){
+    const body=document.getElementById('pcbody');
+    const caret=document.getElementById('pcaret');
+    body.classList.toggle('open');
+    caret.textContent=body.classList.contains('open')?'−':'+';
+  }
+</script>
+</body>
+</html>
